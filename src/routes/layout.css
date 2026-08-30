@@ -1,0 +1,496 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn-svelte/tailwind.css';
+/*
+ * Type.
+ *
+ * Archivo is loaded from `wdth.css` rather than `index.css` because the width
+ * axis is the point: headings are set expanded (112%), which gives them a
+ * silhouette that a weight change alone cannot, and is the one place the page
+ * raises its voice.
+ *
+ * The stack is deliberately script-symmetric. A bilingual site usually picks a
+ * characterful Latin display face and then falls back to whatever Ge'ez font
+ * the system has, so the Amharic half of the site reads as an afterthought.
+ * Archivo, Inter and Noto Sans Ethiopic are all grotesques with similar
+ * proportions, so a heading looks like the same heading in either language —
+ * and the personality comes from how the type is set, not from a face that
+ * exists in only one script.
+ */
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
+@import '@fontsource-variable/noto-sans-ethiopic';
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Brand tokens.
+ *
+ * Both colours are sampled from the logo files in `static/`: the teal
+ * (#027F81) is the mark itself, the gold (#CDA756) is the wordmark on the
+ * dark-background variants. They are the only two hues in the palette; every
+ * surface below is one of them desaturated toward white or ink, so the site
+ * never introduces a colour the logo does not already contain.
+ *
+ * Light mode leads with teal and spends gold sparingly, matching `longLogo.png`.
+ * Dark mode inverts that emphasis — gold carries the type, teal stays on the
+ * interactive surfaces — matching `longLogoforDark.png`.
+ */
+:root {
+	--brand-teal: oklch(0.541 0.092 196.7);
+	--brand-gold: oklch(0.746 0.109 84.4);
+
+	--background: oklch(1 0 0);
+	--foreground: oklch(0.196 0.017 213);
+	--card: oklch(1 0 0);
+	--card-foreground: oklch(0.196 0.017 213);
+	--popover: oklch(1 0 0);
+	--popover-foreground: oklch(0.196 0.017 213);
+	--primary: oklch(0.541 0.092 196.7);
+	--primary-foreground: oklch(0.985 0.006 197);
+	--secondary: oklch(0.961 0.011 197);
+	--secondary-foreground: oklch(0.378 0.064 196.3);
+	--muted: oklch(0.968 0.006 197);
+	--muted-foreground: oklch(0.507 0.023 208);
+	/* A wash of gold, not gold itself — this token is a hover surface. */
+	--accent: oklch(0.958 0.024 85);
+	--accent-foreground: oklch(0.383 0.058 78);
+	--destructive: oklch(0.577 0.245 27.325);
+	--border: oklch(0.918 0.008 200);
+	--input: oklch(0.918 0.008 200);
+	--ring: oklch(0.541 0.092 196.7);
+	--chart-1: oklch(0.541 0.092 196.7);
+	--chart-2: oklch(0.746 0.109 84.4);
+	--chart-3: oklch(0.67 0.084 197.4);
+	--chart-4: oklch(0.463 0.078 196);
+	--chart-5: oklch(0.811 0.052 197.7);
+	--radius: 0.625rem;
+	--sidebar: oklch(0.977 0.007 197);
+	--sidebar-foreground: oklch(0.196 0.017 213);
+	--sidebar-primary: oklch(0.541 0.092 196.7);
+	--sidebar-primary-foreground: oklch(0.985 0.006 197);
+	--sidebar-accent: oklch(0.958 0.024 85);
+	--sidebar-accent-foreground: oklch(0.383 0.058 78);
+	--sidebar-border: oklch(0.918 0.008 200);
+	--sidebar-ring: oklch(0.541 0.092 196.7);
+}
+
+.dark {
+	/* Teal is lifted for legibility on ink; gold is the logo value unchanged. */
+	--brand-teal: oklch(0.672 0.096 197);
+	--brand-gold: oklch(0.775 0.106 84.6);
+
+	--background: oklch(0.171 0.014 212);
+	/* Cream rather than white: the dark logo's wordmark colour, drained of
+	   chroma until it is comfortable to read a paragraph in. */
+	--foreground: oklch(0.951 0.014 85);
+	--card: oklch(0.213 0.016 212);
+	--card-foreground: oklch(0.951 0.014 85);
+	--popover: oklch(0.213 0.016 212);
+	--popover-foreground: oklch(0.951 0.014 85);
+	--primary: oklch(0.672 0.096 197);
+	--primary-foreground: oklch(0.171 0.014 212);
+	--secondary: oklch(0.269 0.019 210);
+	--secondary-foreground: oklch(0.951 0.014 85);
+	--muted: oklch(0.269 0.019 210);
+	--muted-foreground: oklch(0.724 0.019 200);
+	--accent: oklch(0.302 0.031 85);
+	--accent-foreground: oklch(0.926 0.045 85);
+	--destructive: oklch(0.704 0.191 22.216);
+	--border: oklch(1 0 0 / 11%);
+	--input: oklch(1 0 0 / 16%);
+	--ring: oklch(0.672 0.096 197);
+	--chart-1: oklch(0.672 0.096 197);
+	--chart-2: oklch(0.775 0.106 84.6);
+	--chart-3: oklch(0.811 0.052 197.7);
+	--chart-4: oklch(0.872 0.058 86);
+	--chart-5: oklch(0.463 0.078 196);
+	--sidebar: oklch(0.213 0.016 212);
+	--sidebar-foreground: oklch(0.951 0.014 85);
+	--sidebar-primary: oklch(0.672 0.096 197);
+	--sidebar-primary-foreground: oklch(0.171 0.014 212);
+	--sidebar-accent: oklch(0.302 0.031 85);
+	--sidebar-accent-foreground: oklch(0.926 0.045 85);
+	--sidebar-border: oklch(1 0 0 / 11%);
+	--sidebar-ring: oklch(0.672 0.096 197);
+}
+
+@theme inline {
+	/* Noto Sans Ethiopic sits last in every stack so Latin keeps the intended
+	   face and only Ge'ez syllables fall through to it — one stack, two scripts. */
+	--font-sans: 'Inter Variable', 'Noto Sans Ethiopic Variable', sans-serif;
+	--font-display: 'Archivo Variable', 'Noto Sans Ethiopic Variable', sans-serif;
+	/* Labels, figures and codes. A ledger is a monospaced thing. */
+	--font-mono: 'JetBrains Mono Variable', 'Noto Sans Ethiopic Variable', monospace;
+	--color-brand-teal: var(--brand-teal);
+	--color-brand-gold: var(--brand-gold);
+	--color-sidebar-ring: var(--sidebar-ring);
+	--color-sidebar-border: var(--sidebar-border);
+	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+	--color-sidebar-accent: var(--sidebar-accent);
+	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+	--color-sidebar-primary: var(--sidebar-primary);
+	--color-sidebar-foreground: var(--sidebar-foreground);
+	--color-sidebar: var(--sidebar);
+	--color-chart-5: var(--chart-5);
+	--color-chart-4: var(--chart-4);
+	--color-chart-3: var(--chart-3);
+	--color-chart-2: var(--chart-2);
+	--color-chart-1: var(--chart-1);
+	--color-ring: var(--ring);
+	--color-input: var(--input);
+	--color-border: var(--border);
+	--color-destructive: var(--destructive);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-accent: var(--accent);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-muted: var(--muted);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-secondary: var(--secondary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary: var(--primary);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-popover: var(--popover);
+	--color-card-foreground: var(--card-foreground);
+	--color-card: var(--card);
+	--color-foreground: var(--foreground);
+	--color-background: var(--background);
+	--radius-sm: calc(var(--radius) * 0.6);
+	--radius-md: calc(var(--radius) * 0.8);
+	--radius-lg: var(--radius);
+	--radius-xl: calc(var(--radius) * 1.4);
+	--radius-2xl: calc(var(--radius) * 1.8);
+	--radius-3xl: calc(var(--radius) * 2.2);
+	--radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+	* {
+		@apply border-border outline-ring/50;
+	}
+	body {
+		@apply bg-background text-foreground;
+		/* Ge'ez punctuation and Latin both benefit; neither is hurt. */
+		text-rendering: optimizeLegibility;
+	}
+	html {
+		@apply font-sans;
+		-webkit-font-smoothing: antialiased;
+	}
+
+	/*
+	 * Headings, set expanded and tight.
+	 *
+	 * The width axis does the work a second typeface usually would. Tracking is
+	 * pulled in at the same time because expanded letterforms leave more air
+	 * between them, and without the correction a headline reads as loose rather
+	 * than as wide.
+	 */
+	.display {
+		font-family: var(--font-display);
+		font-stretch: 112%;
+		font-weight: 700;
+		letter-spacing: -0.022em;
+		line-height: 1.04;
+		text-wrap: balance;
+	}
+
+	/*
+	 * The eyebrow above a section: what this part of the page is, set as a
+	 * system label rather than as small prose. Mono, because everything this
+	 * company sells is a record with a field name.
+	 */
+	.eyebrow {
+		font-family: var(--font-mono);
+		font-size: 0.6875rem;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		line-height: 1;
+	}
+
+	/* Amharic is not uppercased — Ge'ez has no case, and letter-spacing a
+	   syllabary only breaks the joins. */
+	:lang(am) .eyebrow {
+		text-transform: none;
+		letter-spacing: 0.04em;
+		font-size: 0.75rem;
+	}
+
+	:lang(am) .display {
+		/* Ge'ez ascenders and descenders need more room than Latin at the same
+		   size, and Noto's letterforms are already wide. */
+		font-stretch: 100%;
+		letter-spacing: 0;
+		line-height: 1.24;
+	}
+
+	/*
+	 * Reduced motion.
+	 *
+	 * Durations are collapsed rather than set to zero so that transitions still
+	 * fire their `transitionend` events — code that waits on one should not
+	 * hang. `opacity` and `visibility` are exempt: a fade is not vestibular
+	 * motion, and killing it here would make a cross-fade snap for no benefit.
+	 *
+	 * The reveal system does not rely on this block at all. It checks the same
+	 * preference in JavaScript and never hides anything in the first place —
+	 * an opacity-0 element rescued only by a `!important` override is one
+	 * stylesheet mistake away from an invisible page.
+	 */
+	@media (prefers-reduced-motion: reduce) {
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.001ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.001ms !important;
+			scroll-behavior: auto !important;
+		}
+
+		.ambient {
+			display: none !important;
+		}
+	}
+}
+
+/*
+ * Entrance and reveal.
+ *
+ * `reveal-init` is added by the `reveal` action in JavaScript, never written
+ * into the markup — so with JavaScript unavailable no element is ever hidden
+ * and the page renders complete. See `$lib/actions/reveal.ts`.
+ */
+@layer components {
+	.reveal-init {
+		opacity: 0;
+		/* Defaults to 14px; `reveal={{ y }}` overrides per element. */
+		transform: translate3d(0, var(--reveal-y, 14px), 0);
+		/*
+		 * A gentle overshoot-free ease. Deliberately not a spring: dozens of
+		 * these fire on one page, and a bouncy curve that is charming once is
+		 * fidgety thirty times.
+		 */
+		transition:
+			opacity 0.6s cubic-bezier(0.22, 0.68, 0.3, 1),
+			transform 0.7s cubic-bezier(0.22, 0.68, 0.3, 1);
+		/* Only while it is about to move; cleared on arrival below. */
+		will-change: opacity, transform;
+	}
+
+	/*
+	 * The page-load sequence.
+	 *
+	 * Unlike `.reveal-init`, this one IS written in the stylesheet, because the
+	 * elements it applies to are above the fold and the animation must start
+	 * with the first paint rather than after hydration. That is safe here where
+	 * a scroll reveal would not be: `animation-fill-mode: both` means the
+	 * element ends visible whether or not JavaScript ever runs, and the reduced
+	 * motion block above collapses the duration to nothing.
+	 */
+	.enter {
+		animation: enter 0.7s cubic-bezier(0.22, 0.68, 0.3, 1) both;
+		animation-delay: calc(var(--enter, 0) * 90ms);
+	}
+
+	@keyframes enter {
+		from {
+			opacity: 0;
+			transform: translate3d(0, 16px, 0);
+		}
+		to {
+			opacity: 1;
+			transform: none;
+		}
+	}
+
+	/*
+	 * Card hover.
+	 *
+	 * A 2px rise and a slightly firmer shadow — enough to say "this is one
+	 * thing and it is clickable", not enough to shove the grid around. Applied
+	 * to the card, while the image inside scales on the same hover, so the two
+	 * read as one object moving rather than two effects firing.
+	 */
+	.card-lift {
+		transition:
+			transform 0.3s cubic-bezier(0.22, 0.68, 0.3, 1),
+			box-shadow 0.3s ease;
+	}
+
+	@media (hover: hover) {
+		.card-lift:hover {
+			transform: translateY(-2px);
+		}
+	}
+
+	/* A card mid-reveal must not also be lifted: the two transforms fight, and
+	   the card lands crooked if the pointer happens to be over it. */
+	.reveal-init:not(.reveal-in).card-lift:hover {
+		transform: translate3d(0, var(--reveal-y, 14px), 0);
+	}
+
+	.reveal-init.reveal-in {
+		opacity: 1;
+		transform: none;
+		/* Releasing the layer once the element has landed — a page holding sixty
+		   promoted layers costs memory for an animation that has finished. */
+		will-change: auto;
+	}
+}
+
+/*
+ * Long-form body copy: blog posts and case studies, rendered from markdown.
+ * Scoped to `.prose` so it never leaks into the marketing pages' own layout.
+ */
+@layer components {
+	.prose {
+		max-width: 68ch;
+		font-size: 1.0625rem;
+		line-height: 1.75;
+	}
+	.prose > * + * {
+		margin-top: 1.25em;
+	}
+	.prose h2,
+	.prose h3,
+	.prose h4 {
+		font-family: var(--font-display);
+		font-stretch: 108%;
+		font-weight: 650;
+		letter-spacing: -0.015em;
+		line-height: 1.2;
+		margin-top: 2.25em;
+		margin-bottom: -0.4em;
+	}
+	.prose h2 {
+		font-size: 1.5rem;
+	}
+	.prose h3 {
+		font-size: 1.2rem;
+	}
+	.prose h4 {
+		font-size: 1.0625rem;
+	}
+	.prose a {
+		color: var(--brand-teal);
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+		text-decoration-thickness: 1px;
+	}
+	.prose a:hover {
+		text-decoration-thickness: 2px;
+	}
+	.prose ul,
+	.prose ol {
+		padding-inline-start: 1.4em;
+	}
+	.prose ul {
+		list-style: disc;
+	}
+	.prose ol {
+		list-style: decimal;
+	}
+	.prose li + li {
+		margin-top: 0.4em;
+	}
+	.prose li::marker {
+		color: var(--brand-teal);
+	}
+	.prose blockquote {
+		border-inline-start: 2px solid var(--brand-gold);
+		padding-inline-start: 1.25em;
+		font-size: 1.1875rem;
+		line-height: 1.6;
+		color: var(--muted-foreground);
+	}
+	.prose code {
+		font-family: var(--font-mono);
+		font-size: 0.875em;
+		background: var(--muted);
+		padding: 0.15em 0.35em;
+		border-radius: 0.25rem;
+	}
+	.prose pre {
+		font-family: var(--font-mono);
+		font-size: 0.8125rem;
+		line-height: 1.6;
+		background: var(--muted);
+		padding: 1rem 1.15rem;
+		border-radius: var(--radius);
+		overflow-x: auto;
+	}
+	.prose pre code {
+		background: none;
+		padding: 0;
+	}
+	.prose img {
+		border-radius: var(--radius);
+	}
+	.prose hr {
+		border: 0;
+		border-top: 1px solid var(--border);
+		margin-block: 2.5em;
+	}
+	.prose table {
+		width: 100%;
+		font-size: 0.9375rem;
+		border-collapse: collapse;
+	}
+	.prose th,
+	.prose td {
+		border-bottom: 1px solid var(--border);
+		padding: 0.55em 0.75em;
+		text-align: start;
+	}
+	.prose th {
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted-foreground);
+	}
+	:lang(am) .prose th {
+		text-transform: none;
+		letter-spacing: 0;
+	}
+}
+
+/*
+ * Page transitions.
+ *
+ * Only the fade is animated, and only on the outgoing/incoming roots. Sliding
+ * or scaling a whole page is the sort of effect that is delightful twice and
+ * then stands between the reader and every subsequent click — this site's job
+ * is to get someone to the contact form, not to perform on the way.
+ */
+::view-transition-old(root) {
+	animation: vt-out 0.18s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-new(root) {
+	animation: vt-in 0.28s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes vt-out {
+	to {
+		opacity: 0;
+	}
+}
+
+@keyframes vt-in {
+	from {
+		opacity: 0;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		/* Not `none`: the transition still needs to run and finish, it just does
+		   so instantly. Removing the animation entirely leaves both snapshots
+		   composited on top of each other. */
+		animation-duration: 0.001ms;
+	}
+}

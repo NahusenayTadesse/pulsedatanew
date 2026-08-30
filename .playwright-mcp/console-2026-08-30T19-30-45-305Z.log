@@ -1,0 +1,22 @@
+[   80231ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5173/@vite/client:1002
+[ 4002449ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:5173/projects/spotless-enterprise-erp:0
+[ 4002483ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/favicon.ico:0
+[ 4023114ms] [WARNING] Failed to hydrate:  TypeError: element.getAttribute is not a function
+
+	in <unknown>
+	in sonner.svelte
+	in +layout.svelte
+	in root.svelte
+	in undefined
+
+    at set_attribute (http://localhost:5173/node_modules/.vite/deps/client-CiFXHcqg.js?v=f52c7d68:2724:35)
+    at Toaster (http://localhost:5173/node_modules/.vite/deps/svelte-sonner.js?v=f52c7d68:1749:2)
+    at http://localhost:5173/node_modules/.vite/deps/client-CiFXHcqg.js?v=f52c7d68:704:62
+    at update_reaction (http://localhost:5173/node_modules/.vite/deps/runtime-d69osf9F.js?v=f52c7d68:4549:16)
+    at update_effect (http://localhost:5173/node_modules/.vite/deps/runtime-d69osf9F.js?v=f52c7d68:4664:18)
+    at create_effect (http://localhost:5173/node_modules/.vite/deps/runtime-d69osf9F.js?v=f52c7d68:3965:4)
+    at branch (http://localhost:5173/node_modules/.vite/deps/runtime-d69osf9F.js?v=f52c7d68:4174:9)
+    at http://localhost:5173/node_modules/.vite/deps/client-CiFXHcqg.js?v=f52c7d68:701:13
+    at update_reaction (http://localhost:5173/node_modules/.vite/deps/runtime-d69osf9F.js?v=f52c7d68:4549:16)
+    at update_effect (http://localhost:5173/node_modules/.vite/deps/runtime-d69osf9F.js?v=f52c7d68:4664:18) @ http://localhost:5173/@vite/client:532
+[ 4837513ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5173/@vite/client:1002
