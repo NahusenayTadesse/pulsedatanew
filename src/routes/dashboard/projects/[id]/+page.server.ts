@@ -1,14 +1,14 @@
 import { error, fail, redirect } from '@sveltejs/kit';
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq, sql } from 'drizzle-orm';
 import { setError, superValidate, withFiles } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { db } from '$lib/server/db';
-import { projectOutcomes, projectServices, projects } from '$lib/server/db/schema';
+import { projectImages, projectOutcomes, projectServices, projects } from '$lib/server/db/schema';
 import { projectSchema } from '$lib/forms/admin';
 import { orNull, replaceImage, slugTaken } from '$lib/server/admin';
 import { writeChildren } from '$lib/server/project-write';
 import { renderRichText } from '$lib/server/richtext';
-import { deleteUploadedFile } from '$lib/server/upload';
+import { deleteUploadedFile, saveUploadedFile, UploadError } from '$lib/server/upload';
 import { toDateInput } from '$lib/components/admin/format';
 import { localizeHref } from '$lib/paraglide/runtime';
 import * as m from '$lib/paraglide/messages';
@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	const project = await readProject(id);
 	if (!project) error(404);
 
-	const [services, outcomes] = await Promise.all([
+	const [services, outcomes, images] = await Promise.all([
 		db
 			.select({ label: projectServices.label, labelAm: projectServices.labelAm })
 			.from(projectServices)
@@ -40,7 +40,19 @@ export const load: PageServerLoad = async ({ params }) => {
 			})
 			.from(projectOutcomes)
 			.where(eq(projectOutcomes.projectId, id))
-			.orderBy(asc(projectOutcomes.sortOrder))
+			.orderBy(asc(projectOutcomes.sortOrder)),
+		db
+			.select({
+				id: projectImages.id,
+				image: projectImages.image,
+				alt: projectImages.alt,
+				altAm: projectImages.altAm,
+				caption: projectImages.caption,
+				captionAm: projectImages.captionAm
+			})
+			.from(projectImages)
+			.where(eq(projectImages.projectId, id))
+			.orderBy(asc(projectImages.sortOrder))
 	]);
 
 	// Same reason as the article edit page: these columns hold filenames, and the
@@ -81,6 +93,7 @@ export const load: PageServerLoad = async ({ params }) => {
 
 	return {
 		form,
+		images,
 		coverImage: project.coverImage,
 		clientLogo: project.clientLogo,
 		name: project.name,
@@ -147,16 +160,133 @@ export const actions: Actions = {
 		return withFiles({ form, message: m.dash_saved() });
 	},
 
+	/*
+	 * The gallery's three actions.
+	 *
+	 * Separate from `save`, and from each other, because an image row owns a
+	 * file. The modules and outcomes lists are replaced wholesale on every save,
+	 * which is cheap for text; doing that to images would delete and re-upload
+	 * every file on every save of the project, and lose them all if the save
+	 * failed halfway.
+	 */
+	addImage: async ({ request, params }) => {
+		const projectId = Number(params.id);
+		if (!(await readProject(projectId))) error(404);
+
+		const data = await request.formData();
+		const file = data.get('image');
+
+		if (!(file instanceof File) || file.size === 0) {
+			return fail(400, { galleryError: m.dash_gallery_no_file() });
+		}
+
+		let stored: string;
+		try {
+			stored = await saveUploadedFile(file);
+		} catch (err) {
+			// `saveUploadedFile` already refuses the wrong type or an oversized
+			// file with a message written for the person who chose it.
+			return fail(400, {
+				galleryError: err instanceof UploadError ? err.message : m.dash_gallery_upload_failed()
+			});
+		}
+
+		// Appended to the end. Position is edited on the row afterwards, which
+		// keeps "add" a single decision rather than two.
+		const [last] = await db
+			.select({ max: sql<number | null>`MAX(${projectImages.sortOrder})` })
+			.from(projectImages)
+			.where(eq(projectImages.projectId, projectId));
+
+		await db.insert(projectImages).values({
+			projectId,
+			image: stored,
+			alt: orNull(String(data.get('alt') ?? '')),
+			altAm: orNull(String(data.get('altAm') ?? '')),
+			caption: orNull(String(data.get('caption') ?? '')),
+			captionAm: orNull(String(data.get('captionAm') ?? '')),
+			sortOrder: (last?.max ?? -1) + 1
+		});
+
+		return { galleryMessage: m.dash_gallery_added() };
+	},
+
+	updateImage: async ({ request, params }) => {
+		const projectId = Number(params.id);
+		const data = await request.formData();
+		const id = Number(data.get('id'));
+		if (!Number.isInteger(id)) return fail(400, { galleryError: m.dash_gallery_upload_failed() });
+
+		const position = Number(data.get('sortOrder'));
+
+		/*
+		 * Scoped to this project as well as to the row id.
+		 *
+		 * The id arrives in a form field, so on its own it would let anyone signed
+		 * in retitle an image belonging to a different case study by editing the
+		 * hidden input. Every account here is trusted, but a query that only works
+		 * when the caller behaves is a query written wrong.
+		 */
+		await db
+			.update(projectImages)
+			.set({
+				alt: orNull(String(data.get('alt') ?? '')),
+				altAm: orNull(String(data.get('altAm') ?? '')),
+				caption: orNull(String(data.get('caption') ?? '')),
+				captionAm: orNull(String(data.get('captionAm') ?? '')),
+				sortOrder: Number.isFinite(position) ? position : 0
+			})
+			.where(and(eq(projectImages.id, id), eq(projectImages.projectId, projectId)));
+
+		return { galleryMessage: m.dash_gallery_updated() };
+	},
+
+	deleteImage: async ({ request, params }) => {
+		const projectId = Number(params.id);
+		const data = await request.formData();
+		const id = Number(data.get('id'));
+		if (!Number.isInteger(id)) return fail(400, { galleryError: m.dash_gallery_upload_failed() });
+
+		const [row] = await db
+			.select({ image: projectImages.image })
+			.from(projectImages)
+			.where(and(eq(projectImages.id, id), eq(projectImages.projectId, projectId)))
+			.limit(1);
+
+		if (!row) return fail(404, { galleryError: m.dash_gallery_upload_failed() });
+
+		await db
+			.delete(projectImages)
+			.where(and(eq(projectImages.id, id), eq(projectImages.projectId, projectId)));
+
+		// The row goes first. An orphaned file wastes a few kilobytes; a row
+		// pointing at a file that no longer exists is a broken image on the site.
+		await deleteUploadedFile(row.image).catch(() => {});
+
+		return { galleryMessage: m.dash_gallery_removed() };
+	},
+
 	delete: async ({ params }) => {
 		const id = Number(params.id);
 		const existing = await readProject(id);
 		if (!existing) error(404);
 
-		// The child rows go with it via `ON DELETE CASCADE`, declared on the
-		// foreign keys in schema.ts — this is the one place that matters.
+		/*
+		 * The gallery filenames are read before the delete, not after.
+		 *
+		 * `ON DELETE CASCADE` on the foreign key takes the rows with the project,
+		 * so once it has run there is nothing left to say which files belonged to
+		 * it — and they would sit in `FILES_DIR` forever.
+		 */
+		const gallery = await db
+			.select({ image: projectImages.image })
+			.from(projectImages)
+			.where(eq(projectImages.projectId, id));
+		const galleryFiles = gallery.map((row) => row.image);
+
 		await db.delete(projects).where(eq(projects.id, id));
 
-		for (const file of [existing.coverImage, existing.clientLogo]) {
+		for (const file of [existing.coverImage, existing.clientLogo, ...galleryFiles]) {
 			if (file) await deleteUploadedFile(file).catch(() => {});
 		}
 

@@ -1,5 +1,7 @@
 import { relations } from 'drizzle-orm';
 import { enquiryTopics } from '$lib/forms/topics';
+import { socialPlatforms } from '$lib/social';
+import { emailKinds, emailStatuses } from '$lib/outbox';
 import {
 	boolean,
 	index,
@@ -27,11 +29,13 @@ export * from './auth.schema';
  *    `$lib/i18n` does. Add a third locale and this should become a join table;
  *    two does not justify one.
  *
- * 2. **Only what changes is in here.** The home and about pages are prose that
- *    ships with the code, so they live in `messages/{en,am}.json` and are
- *    version-controlled with the markup they sit in. What is in the database is
- *    the material that accumulates after launch: posts, projects, and the
- *    enquiries the contact form collects.
+ * 2. **Only what changes is in here.** The home page's argument is prose that
+ *    ships with the code, so it lives in `messages/{en,am}.json`, version
+ *    controlled with the markup it sits in. What is in the database is the
+ *    material that accumulates after launch: posts, projects, the team, and the
+ *    enquiries the contact form collects. The team moved here from the message
+ *    files the day it became clear that hiring someone should not require a
+ *    deploy.
  *
  * 3. **Uploads are filenames, not rows.** `saveUploadedFile` writes a UUID-named
  *    file and returns that name; the columns below store the string and
@@ -229,6 +233,189 @@ export const projectImages = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// Team
+// ---------------------------------------------------------------------------
+
+/**
+ * The people on the about page.
+ *
+ * This started in `messages/{en,am}.json` on the reasoning that three bios
+ * change roughly never — which was true of the copy and false of the company.
+ * A hire, a title change or a new photograph should not need a deploy, so the
+ * team is a table like everything else that accumulates after launch.
+ *
+ * `photo` is optional on purpose, and the about page reads the whole set before
+ * deciding how to draw it: photographs appear only when *every* published
+ * member has one. A grid of three faces and one monogram does not read as a
+ * team, it reads as a missing image.
+ */
+export const teamMembers = mysqlTable(
+	'team_members',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+
+		name: varchar('name', { length: 200 }).notNull(),
+		nameAm: varchar('name_am', { length: 200 }),
+		role: varchar('role', { length: 200 }),
+		roleAm: varchar('role_am', { length: 200 }),
+		bio: text('bio'),
+		bioAm: text('bio_am'),
+
+		/** A `/files/:name` filename, as every other upload is. */
+		photo: varchar('photo', { length: 255 }),
+		/**
+		 * Alt text for the photograph.
+		 *
+		 * Nullable, and the page falls back to the person's name — which is very
+		 * often the whole of what a portrait's alt text should say.
+		 */
+		photoAlt: varchar('photo_alt', { length: 255 }),
+		photoAltAm: varchar('photo_alt_am', { length: 255 }),
+
+		status: mysqlEnum('status', publishStatus).notNull().default('draft'),
+		sortOrder: int('sort_order').notNull().default(0),
+
+		createdAt: timestamp('created_at').notNull().defaultNow(),
+		updatedAt: timestamp('updated_at')
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => new Date())
+	},
+	(table) => [index('team_members_status_sort_idx').on(table.status, table.sortOrder)]
+);
+
+/**
+ * A person's social profiles.
+ *
+ * A row per link rather than a column per platform, because the set of
+ * platforms that matter is not stable and a `linkedin_url` column is a schema
+ * change every time it moves. `platform` is an enum so every stored value has
+ * an icon — see `$lib/social`.
+ */
+export const teamMemberLinks = mysqlTable(
+	'team_member_links',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+		memberId: int('member_id', { unsigned: true })
+			.notNull()
+			.references(() => teamMembers.id, { onDelete: 'cascade' }),
+		platform: mysqlEnum('platform', socialPlatforms).notNull(),
+		/** A full URL, or a bare address when `platform` is `email`. */
+		url: varchar('url', { length: 500 }).notNull(),
+		sortOrder: int('sort_order').notNull().default(0)
+	},
+	(table) => [index('team_member_links_member_idx').on(table.memberId)]
+);
+
+// ---------------------------------------------------------------------------
+// Outbound mail
+// ---------------------------------------------------------------------------
+
+/**
+ * One row per message this site tries to send.
+ *
+ * Written by `sendMail` itself rather than by its callers, so nothing can send
+ * without leaving a record — the same reason every message goes through one
+ * transport in the first place.
+ *
+ * It exists because SMTP submission leaves no trace anywhere the company can
+ * see: webmail's Sent folder is written by webmail, so a message this
+ * application sends is invisible in exactly the place staff look for it. The
+ * `MAIL_ARCHIVE` blind copy puts one in the inbox; this puts one somewhere that
+ * can be searched, filtered and read beside the enquiry it answers.
+ *
+ * **Failures are recorded too**, with the reason. A message that never left is
+ * the single most important thing to be able to see, and it is the one a
+ * mailbox copy can never show you.
+ *
+ * The body is stored as sent. That makes this table personal data — recipient
+ * addresses and message text — so it is behind the dashboard login, and a row
+ * can be deleted from the screen that shows it.
+ */
+export const sentEmails = mysqlTable(
+	'sent_emails',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+
+		/** The envelope recipient. One address; `cc` and `bcc` are separate. */
+		recipient: varchar('recipient', { length: 320 }).notNull(),
+		cc: varchar('cc', { length: 500 }),
+		bcc: varchar('bcc', { length: 500 }),
+		subject: varchar('subject', { length: 500 }).notNull(),
+
+		/** Exactly what was sent, both parts. */
+		bodyHtml: mediumtext('body_html').notNull(),
+		bodyText: mediumtext('body_text'),
+
+		kind: mysqlEnum('kind', emailKinds).notNull().default('other'),
+		status: mysqlEnum('status', emailStatuses).notNull().default('sent'),
+		/** The mail server's complaint, when `status` is `failed`. */
+		error: text('error'),
+		/** The SMTP message id, which is what a mail server's logs are searched by. */
+		messageId: varchar('message_id', { length: 255 }),
+		/** Attachment file names only — never their contents or paths. */
+		attachments: varchar('attachments', { length: 1000 }),
+
+		/**
+		 * Who pressed send, when a person did. A name rather than a user id:
+		 * the record should still say who sent it after that account is gone.
+		 */
+		sentBy: varchar('sent_by', { length: 160 }),
+		/**
+		 * The enquiry this answers, when it answers one.
+		 *
+		 * Not a foreign key on purpose — deleting an enquiry must not delete the
+		 * evidence that a reply was sent to it, and a cascade would do exactly
+		 * that.
+		 */
+		enquiryId: int('enquiry_id', { unsigned: true }),
+
+		createdAt: timestamp('created_at').notNull().defaultNow()
+	},
+	(table) => [
+		index('sent_emails_created_idx').on(table.createdAt),
+		index('sent_emails_status_idx').on(table.status, table.createdAt),
+		index('sent_emails_enquiry_idx').on(table.enquiryId)
+	]
+);
+
+// ---------------------------------------------------------------------------
+// Traffic
+// ---------------------------------------------------------------------------
+
+/**
+ * One row per page view of the public site.
+ *
+ * Deliberately not analytics in the usual sense: there is no IP address here,
+ * no user agent, no cookie and nothing that leaves the server. `visitor` is a
+ * hash of the address, the user agent and *the date*, salted with a server
+ * secret — which counts a person once a day and is worthless the following
+ * day, so the table cannot be turned into a record of who read what over time.
+ *
+ * That is enough to answer the two questions a company site actually asks —
+ * how many people came, and what did they read — without a third party, a
+ * consent banner, or a script in the page.
+ */
+export const pageViews = mysqlTable(
+	'page_views',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+		/** The de-localised path, so `/am/about` and `/about` count as one page. */
+		path: varchar('path', { length: 191 }).notNull(),
+		locale: varchar('locale', { length: 8 }).notNull().default('en'),
+		/** Daily-rotating, salted hash. Not reversible and not stable past midnight. */
+		visitor: varchar('visitor', { length: 64 }).notNull(),
+		/** Only the host — `google.com`, not the query someone typed into it. */
+		referrerHost: varchar('referrer_host', { length: 191 }),
+		createdAt: timestamp('created_at').notNull().defaultNow()
+	},
+	(table) => [
+		index('page_views_created_idx').on(table.createdAt),
+		index('page_views_path_idx').on(table.path, table.createdAt)
+	]
+);
+
+// ---------------------------------------------------------------------------
 // Contact
 // ---------------------------------------------------------------------------
 
@@ -281,6 +468,38 @@ export const contactSubmissions = mysqlTable(
 );
 
 // ---------------------------------------------------------------------------
+// Login throttling
+// ---------------------------------------------------------------------------
+
+/**
+ * One row per failed sign-in, kept only long enough to count.
+ *
+ * In the database rather than in memory because a count that lives in a
+ * process is reset by every deploy and every restart — which is a lock an
+ * attacker can clear by waiting for one. It is also the same mechanism the
+ * contact form's flood check already uses, so there is one answer here to
+ * "where do we count things per address".
+ *
+ * Successful sign-ins delete their rows rather than adding one: what matters
+ * is consecutive failures, and a person who gets their password right on the
+ * sixth try should not be locked out on the seventh visit.
+ */
+export const loginAttempts = mysqlTable(
+	'login_attempts',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+		/** The email that was tried, lower-cased — recorded whether or not it exists. */
+		identifier: varchar('identifier', { length: 255 }).notNull(),
+		ipAddress: varchar('ip_address', { length: 64 }).notNull(),
+		createdAt: timestamp('created_at').notNull().defaultNow()
+	},
+	(table) => [
+		index('login_attempts_identifier_idx').on(table.identifier, table.createdAt),
+		index('login_attempts_ip_idx').on(table.ipAddress, table.createdAt)
+	]
+);
+
+// ---------------------------------------------------------------------------
 // Newsletter
 // ---------------------------------------------------------------------------
 
@@ -315,6 +534,14 @@ export const projectOutcomesRelations = relations(projectOutcomes, ({ one }) => 
 	project: one(projects, { fields: [projectOutcomes.projectId], references: [projects.id] })
 }));
 
+export const teamMembersRelations = relations(teamMembers, ({ many }) => ({
+	links: many(teamMemberLinks)
+}));
+
+export const teamMemberLinksRelations = relations(teamMemberLinks, ({ one }) => ({
+	member: one(teamMembers, { fields: [teamMemberLinks.memberId], references: [teamMembers.id] })
+}));
+
 export const projectImagesRelations = relations(projectImages, ({ one }) => ({
 	project: one(projects, { fields: [projectImages.projectId], references: [projects.id] })
 }));
@@ -325,3 +552,6 @@ export type ProjectService = typeof projectServices.$inferSelect;
 export type ProjectOutcome = typeof projectOutcomes.$inferSelect;
 export type ProjectImage = typeof projectImages.$inferSelect;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
+export type SentEmail = typeof sentEmails.$inferSelect;
+export type TeamMember = typeof teamMembers.$inferSelect;
+export type TeamMemberLink = typeof teamMemberLinks.$inferSelect;

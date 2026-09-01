@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import { stagger } from '$lib/actions/reveal';
-	import { SITE_URL } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -15,7 +15,7 @@
 	<meta name="description" content={m.projects_intro()} />
 	<meta property="og:title" content="{m.nav_projects()} · {m.site_name()}" />
 	<meta property="og:description" content={m.projects_intro()} />
-	<meta property="og:image" content="{SITE_URL}/longLogo.png" />
+	<meta property="og:image" content={OG_IMAGE} />
 </svelte:head>
 
 <section class="mx-auto max-w-6xl px-5 pt-16 pb-14 sm:px-8 sm:pt-24">
@@ -32,7 +32,7 @@
 	{#if data.projects.length}
 		<div class="grid gap-12 sm:grid-cols-2">
 			{#each data.projects as project, index (project.id)}
-				<ProjectCard {project} delay={stagger(index, 110)} />
+				<ProjectCard {project} level={2} delay={stagger(index, 110)} />
 			{/each}
 		</div>
 	{:else}

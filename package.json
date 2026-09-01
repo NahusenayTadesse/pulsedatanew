@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build",
+		"build": "vite build && tar -czvf build.tar.gz build/",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
@@ -39,6 +39,8 @@
 		"@tailwindcss/vite": "^4.3.0",
 		"@tanstack/table-core": "^9.2.4",
 		"@types/node": "^22",
+		"@types/nodemailer": "^8.0.1",
+		"@types/sanitize-html": "^2.16.1",
 		"auth": "^1.6.23",
 		"better-auth": "^1.6.23",
 		"bits-ui": "^2.19.0",
@@ -51,7 +53,6 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.19.0",
 		"globals": "^17.6.0",
-		"isomorphic-dompurify": "^3.23.0",
 		"marked": "^18.0.11",
 		"mysql2": "^3.22.4",
 		"prettier": "^3.8.3",
@@ -74,6 +75,7 @@
 	},
 	"dependencies": {
 		"mode-watcher": "^1.1.0",
-		"nodemailer": "^9.0.6"
+		"nodemailer": "^9.0.6",
+		"sanitize-html": "^2.17.7"
 	}
 }

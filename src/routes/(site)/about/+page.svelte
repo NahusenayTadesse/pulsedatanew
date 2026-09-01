@@ -3,22 +3,30 @@
 	import Section from '$lib/components/site/Section.svelte';
 	import CtaBand from '$lib/components/site/CtaBand.svelte';
 	import { reveal, stagger } from '$lib/actions/reveal';
-	import { SITE_URL } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
+	import { assetUrl } from '$lib/assets';
+	import { pick } from '$lib/i18n';
+	import { socialHref, socialLabel, type SocialPlatform } from '$lib/social';
+	import SocialIcon from '$lib/components/site/SocialIcon.svelte';
 	import * as m from '$lib/paraglide/messages';
 
+	let { data } = $props();
+
 	/**
-	 * The team is written here rather than kept in a table.
+	 * The team comes from the database, so a hire does not need a deploy.
 	 *
-	 * Three people who each need a bilingual bio would be a table with six text
-	 * columns that changes when the company changes, which is roughly never —
-	 * and translating a bio is an editing job, not a data-entry one. In the
-	 * message files it is version-controlled alongside the markup it sits in.
+	 * `showPhotos` is decided on the server, over the whole set: portraits are
+	 * shown only when everyone has one — see the note in `+page.server.ts`.
 	 */
-	const team = $derived([
-		{ name: m.team_surafel_name(), role: m.team_surafel_role(), bio: m.team_surafel_bio() },
-		{ name: m.team_nahusenay_name(), role: m.team_nahusenay_role(), bio: m.team_nahusenay_bio() },
-		{ name: m.team_nahom_name(), role: m.team_nahom_role(), bio: m.team_nahom_bio() }
-	]);
+	const team = $derived(
+		data.team.map((member) => ({
+			...member,
+			name: pick(member.name, member.nameAm),
+			role: pick(member.role, member.roleAm),
+			bio: pick(member.bio, member.bioAm),
+			photoAlt: pick(member.photoAlt, member.photoAltAm)
+		}))
+	);
 
 	const technicalPoints = $derived([
 		m.about_technical_point_1(),
@@ -33,7 +41,7 @@
 		{ title: m.about_why_4_title(), body: m.about_why_4_body() }
 	]);
 
-	/** Initials for the team avatars — no photographs have been supplied yet. */
+	/** The monogram shown in place of a portrait, when nobody has one. */
 	const initials = (name: string) =>
 		name
 			.split(/\s+/)
@@ -47,7 +55,7 @@
 	<meta name="description" content={m.about_intro()} />
 	<meta property="og:title" content="{m.nav_about()} · {m.site_name()}" />
 	<meta property="og:description" content={m.about_intro()} />
-	<meta property="og:image" content="{SITE_URL}/longLogo.png" />
+	<meta property="og:image" content={OG_IMAGE} />
 </svelte:head>
 
 <section class="mx-auto max-w-6xl px-5 pt-16 pb-14 sm:px-8 sm:pt-24">
@@ -92,23 +100,64 @@
 	</div>
 </Section>
 
-<Section eyebrow={m.about_team_eyebrow()} title={m.about_team_title()}>
-	<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-		{#each team as person, index (person.name)}
-			<li use:reveal={{ delay: stagger(index, 100) }} class="card-lift border-t pt-6">
-				<div
-					class="display mb-5 flex size-14 items-center justify-center rounded-full bg-secondary text-lg text-secondary-foreground"
-					aria-hidden="true"
-				>
-					{initials(person.name)}
-				</div>
-				<h3 class="text-base font-semibold">{person.name}</h3>
-				<p class="eyebrow mt-2 text-brand-gold">{person.role}</p>
-				<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{person.bio}</p>
-			</li>
-		{/each}
-	</ul>
-</Section>
+<!-- Hidden entirely when nobody is published, rather than rendered as an empty
+     heading: a section title with nothing under it reads as a broken page. -->
+{#if team.length}
+	<Section eyebrow={m.about_team_eyebrow()} title={m.about_team_title()}>
+		<ul class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+			{#each team as person, index (person.id)}
+				<li use:reveal={{ delay: stagger(index, 100) }} class="card-lift border-t pt-6">
+					{#if data.showPhotos}
+						<img
+							src={assetUrl(person.photo)}
+							alt={person.photoAlt || person.name}
+							width="96"
+							height="96"
+							loading="lazy"
+							decoding="async"
+							class="mb-5 size-24 rounded-full border object-cover"
+						/>
+					{:else}
+						<div
+							class="display mb-5 flex size-14 items-center justify-center rounded-full bg-secondary text-lg text-secondary-foreground"
+							aria-hidden="true"
+						>
+							{initials(person.name)}
+						</div>
+					{/if}
+
+					<h3 class="text-base font-semibold">{person.name}</h3>
+					{#if person.role}
+						<p class="eyebrow mt-2 text-brand-gold">{person.role}</p>
+					{/if}
+					{#if person.bio}
+						<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{person.bio}</p>
+					{/if}
+
+					{#if person.links.length}
+						<ul class="mt-4 flex flex-wrap items-center gap-1">
+							{#each person.links as link (link.id)}
+								<li>
+									<a
+										href={socialHref(link.platform as SocialPlatform, link.url)}
+										target="_blank"
+										rel="me noopener noreferrer"
+										class="inline-flex size-9 items-center justify-center rounded-full border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+									>
+										<SocialIcon platform={link.platform as SocialPlatform} />
+										<span class="sr-only">
+											{socialLabel(link.platform as SocialPlatform, person.name)}
+										</span>
+									</a>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</li>
+			{/each}
+		</ul>
+	</Section>
+{/if}
 
 <Section eyebrow={m.about_why_eyebrow()} title={m.about_why_title()} lede={m.about_why_body()}>
 	<div class="grid gap-x-10 gap-y-px sm:grid-cols-2">

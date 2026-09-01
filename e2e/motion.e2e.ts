@@ -44,14 +44,27 @@ test('below-fold content starts hidden, and none of it is stranded', async ({ br
 	 * `$lib/actions/reveal.ts` those elements stayed at opacity 0 permanently.
 	 */
 	await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-	await page.waitForTimeout(900);
 
-	const stranded = await page.evaluate(() =>
-		[...document.querySelectorAll('.reveal-init')]
-			.filter((el) => getComputedStyle(el).opacity === '0')
-			.map((el) => el.className.slice(0, 60))
-	);
-	expect(stranded, 'elements left invisible after a jump scroll').toEqual([]);
+	/*
+	 * Polled rather than slept on.
+	 *
+	 * The sweep runs on the next frames after the scroll and the reveal itself
+	 * is a transition, so any fixed wait is a guess about how loaded the machine
+	 * is — a guess that was right until the suite grew enough to run this test
+	 * alongside five others. Waiting for the condition tests the same thing and
+	 * cannot be made flaky by a slower run.
+	 */
+	await expect
+		.poll(
+			async () =>
+				page.evaluate(() =>
+					[...document.querySelectorAll('.reveal-init')]
+						.filter((el) => getComputedStyle(el).opacity === '0')
+						.map((el) => el.className.slice(0, 60))
+				),
+			{ message: 'elements left invisible after a jump scroll', timeout: 5000 }
+		)
+		.toEqual([]);
 
 	await context.close();
 });
@@ -101,9 +114,15 @@ test('counting figures keep their non-numeric parts', async ({ browser }) => {
 	const figures = page.locator('#outcomes + dl dt');
 	await figures.first().scrollIntoViewIfNeeded();
 
-	// "24/7" must animate the 24 and keep the "/7". An outcome value is written
-	// as prose, and the counter must not push the copy toward bare integers.
-	await expect(figures.nth(2)).toHaveText('24/7', { timeout: 5000 });
+	/*
+	 * "50+" must animate the 50 and keep the "+".
+	 *
+	 * An outcome value is written as prose, not as a number, and the counter must
+	 * not push the copy toward bare integers. This asserts the seeded value from
+	 * `scripts/projects.ts`; it is the third outcome because that is the one with
+	 * a non-numeric part, which is the whole point of the test.
+	 */
+	await expect(figures.nth(2)).toHaveText('50+', { timeout: 5000 });
 
 	await context.close();
 });

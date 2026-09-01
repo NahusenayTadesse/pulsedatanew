@@ -10,7 +10,8 @@
 	import { MAX_UPLOAD_MB, DOCUMENT_ACCEPT } from '$lib/forms/uploads';
 	import { enquiryTopics } from '$lib/forms/topics';
 	import { reveal, stagger } from '$lib/actions/reveal';
-	import { CONTACT, SITE_URL } from '$lib/site';
+	import { CONTACT } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -85,7 +86,7 @@
 	<meta name="description" content={m.contact_intro()} />
 	<meta property="og:title" content="{m.nav_contact()} · {m.site_name()}" />
 	<meta property="og:description" content={m.contact_intro()} />
-	<meta property="og:image" content="{SITE_URL}/longLogo.png" />
+	<meta property="og:image" content={OG_IMAGE} />
 </svelte:head>
 
 <section class="mx-auto max-w-6xl px-5 pt-16 pb-14 sm:px-8 sm:pt-24">
@@ -218,23 +219,26 @@
 			<dl class="space-y-0">
 				{#each details as detail, index (detail.label)}
 					{@const Icon = detail.icon}
-					<div
-						use:reveal={{ delay: stagger(index, 80) }}
-						class="flex items-start gap-3 border-t py-4"
-					>
-						<Icon class="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-						<div>
-							<dt class="eyebrow text-muted-foreground">{detail.label}</dt>
-							<dd class="mt-1.5 text-sm font-medium">
-								{#if detail.href}
-									<a href={detail.href} class="transition-colors hover:text-primary">
-										{detail.value}
-									</a>
-								{:else}
+					<!--
+						`dt` and `dd` are direct children of this wrapper. A `<dl>` may
+						group its pairs in a `<div>`, but only one deep — the extra
+						wrapper that used to hold them made the list invalid, and screen
+						readers stop pairing the terms with their values.
+					-->
+					<div use:reveal={{ delay: stagger(index, 80) }} class="border-t py-4">
+						<dt class="eyebrow flex items-center gap-3 text-muted-foreground">
+							<Icon class="size-4 shrink-0" aria-hidden="true" />
+							{detail.label}
+						</dt>
+						<dd class="mt-1.5 ps-7 text-sm font-medium">
+							{#if detail.href}
+								<a href={detail.href} class="transition-colors hover:text-primary">
 									{detail.value}
-								{/if}
-							</dd>
-						</div>
+								</a>
+							{:else}
+								{detail.value}
+							{/if}
+						</dd>
 					</div>
 				{/each}
 			</dl>

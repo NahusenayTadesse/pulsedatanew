@@ -1,6 +1,7 @@
 node_modules
 
 # Output
+build.tar.gz
 .output
 .vercel
 .netlify
@@ -30,3 +31,6 @@ project.inlang/cache/
 # Uploaded files
 .tempFiles
 
+
+# One-off outbound proposal drafts
+.proposal-preview

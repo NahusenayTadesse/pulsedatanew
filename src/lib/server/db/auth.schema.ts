@@ -3,8 +3,10 @@ import {
 	mysqlTable,
 	varchar,
 	text,
+	bigint,
 	timestamp,
 	boolean,
+	int,
 	index,
 	uniqueIndex
 } from 'drizzle-orm/mysql-core';
@@ -84,6 +86,13 @@ export const verification = mysqlTable(
 	},
 	(table) => [index('verification_identifier_idx').on(table.identifier)]
 );
+
+export const rateLimit = mysqlTable('rate_limit', {
+	id: varchar('id', { length: 36 }).primaryKey(),
+	key: varchar('key', { length: 255 }).notNull().unique(),
+	count: int('count').notNull(),
+	lastRequest: bigint('last_request', { mode: 'number' }).notNull()
+});
 
 export const userRelations = relations(user, ({ many }) => ({
 	sessions: many(session),

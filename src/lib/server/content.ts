@@ -1,11 +1,13 @@
-import { and, asc, desc, eq, lte, ne, or, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, lte, ne, or, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
 	posts,
 	projects,
 	projectImages,
 	projectOutcomes,
-	projectServices
+	projectServices,
+	teamMemberLinks,
+	teamMembers
 } from '$lib/server/db/schema';
 
 /**
@@ -165,6 +167,55 @@ export async function otherProjects(currentId: number, limit = 2) {
 		.orderBy(asc(projects.sortOrder))
 		.limit(limit);
 }
+
+/**
+ * The published team, each person with their social links attached.
+ *
+ * Two queries and a group, rather than a join: a join repeats every bio once
+ * per link and then has to be un-repeated in JavaScript anyway, and the whole
+ * team is a handful of rows.
+ *
+ * A member with no `sortOrder` set falls back to their id, so the order is at
+ * worst "who was added first" rather than arbitrary.
+ */
+export async function listTeam() {
+	const members = await db
+		.select({
+			id: teamMembers.id,
+			name: teamMembers.name,
+			nameAm: teamMembers.nameAm,
+			role: teamMembers.role,
+			roleAm: teamMembers.roleAm,
+			bio: teamMembers.bio,
+			bioAm: teamMembers.bioAm,
+			photo: teamMembers.photo,
+			photoAlt: teamMembers.photoAlt,
+			photoAltAm: teamMembers.photoAltAm
+		})
+		.from(teamMembers)
+		.where(eq(teamMembers.status, 'published'))
+		.orderBy(asc(teamMembers.sortOrder), asc(teamMembers.id));
+
+	if (!members.length) return [];
+
+	const links = await db
+		.select()
+		.from(teamMemberLinks)
+		.where(
+			inArray(
+				teamMemberLinks.memberId,
+				members.map((member) => member.id)
+			)
+		)
+		.orderBy(asc(teamMemberLinks.sortOrder), asc(teamMemberLinks.id));
+
+	return members.map((member) => ({
+		...member,
+		links: links.filter((link) => link.memberId === member.id)
+	}));
+}
+
+export type TeamCard = Awaited<ReturnType<typeof listTeam>>[number];
 
 export type PostCard = Awaited<ReturnType<typeof listPosts>>[number];
 export type ProjectCard = Awaited<ReturnType<typeof listProjects>>[number];

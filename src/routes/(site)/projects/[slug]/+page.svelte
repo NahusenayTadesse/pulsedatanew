@@ -10,6 +10,7 @@
 	import CountUp from '$lib/components/site/CountUp.svelte';
 	import { reveal, stagger } from '$lib/actions/reveal';
 	import { SITE_URL } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -31,7 +32,7 @@
 	<meta property="og:title" content="{name} · {m.site_name()}" />
 	<meta property="og:description" content={summary} />
 	<meta property="og:type" content="article" />
-	<meta property="og:image" content={cover ? `${SITE_URL}${cover}` : `${SITE_URL}/longLogo.png`} />
+	<meta property="og:image" content={cover ? `${SITE_URL}${cover}` : OG_IMAGE} />
 </svelte:head>
 
 <ScrollProgress />
@@ -139,7 +140,7 @@
 				</p>
 			{/if}
 			<!-- The only `@html` on the site. Its input is `renderRichText`, which
-			     sanitises with DOMPurify before returning. -->
+			     sanitises before returning. -->
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			<div class="prose">{@html body}</div>
 		</div>

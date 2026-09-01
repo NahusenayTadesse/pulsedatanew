@@ -2,7 +2,7 @@
 	import PostCard from '$lib/components/site/PostCard.svelte';
 	import CtaBand from '$lib/components/site/CtaBand.svelte';
 	import { stagger } from '$lib/actions/reveal';
-	import { SITE_URL } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -13,7 +13,7 @@
 	<meta name="description" content={m.blogs_intro()} />
 	<meta property="og:title" content="{m.nav_blogs()} · {m.site_name()}" />
 	<meta property="og:description" content={m.blogs_intro()} />
-	<meta property="og:image" content="{SITE_URL}/longLogo.png" />
+	<meta property="og:image" content={OG_IMAGE} />
 </svelte:head>
 
 <section class="mx-auto max-w-6xl px-5 pt-16 pb-14 sm:px-8 sm:pt-24">
@@ -29,12 +29,12 @@
 <section class="mx-auto max-w-6xl border-t px-5 py-16 sm:px-8 sm:py-20">
 	{#if data.lead}
 		<div class="grid gap-12 lg:grid-cols-[1.3fr_1fr]">
-			<PostCard post={data.lead} featured />
+			<PostCard post={data.lead} featured level={2} />
 
 			{#if data.rest.length}
 				<div class="grid content-start gap-8">
 					{#each data.rest.slice(0, 3) as post, index (post.id)}
-						<PostCard {post} delay={stagger(index, 90)} />
+						<PostCard {post} level={2} delay={stagger(index, 90)} />
 					{/each}
 				</div>
 			{/if}

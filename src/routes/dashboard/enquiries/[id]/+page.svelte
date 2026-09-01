@@ -3,6 +3,9 @@
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import EnquiryStatus from '$lib/components/admin/EnquiryStatus.svelte';
+	import MailKind from '$lib/components/admin/MailKind.svelte';
+	import EmailComposer from '$lib/components/admin/EmailComposer.svelte';
+	import { replySchema } from '$lib/forms/mail';
 	import { formatDateTime } from '$lib/components/admin/format';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
@@ -147,12 +150,60 @@
 		</section>
 	{/if}
 
-	<div class="flex flex-wrap items-center gap-3 border-t pt-6">
-		<Button href={mailto}>
-			<Mail class="size-4" aria-hidden="true" />
-			{m.dash_enquiry_reply()}
-		</Button>
+	<!--
+		What has actually been sent about this enquiry.
+		
+		Above the reply box, because it answers the question somebody has before
+		they start typing: has this already been answered, and did that answer
+		leave the building? The status pill only records that a button was
+		pressed.
+	-->
+	{#if data.correspondence.length}
+		<section aria-labelledby="correspondence" class="border-t pt-6">
+			<h2 id="correspondence" class="display mb-4 text-lg">{m.dash_mail_correspondence()}</h2>
+			<ul class="divide-y rounded-lg border">
+				{#each data.correspondence as item (item.id)}
+					<li>
+						<a
+							href={localizeHref(`/dashboard/email/sent/${item.id}`)}
+							class="flex flex-wrap items-center gap-x-4 gap-y-1 p-4 transition-colors hover:bg-secondary/50"
+						>
+							<span class="min-w-0 flex-1 truncate text-sm font-medium">{item.subject}</span>
+							<MailKind kind={item.kind} status={item.status} />
+							<span class="font-mono text-xs text-muted-foreground">
+								{formatDateTime(item.createdAt)}
+							</span>
+						</a>
+					</li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
 
+	<section aria-labelledby="reply" class="border-t pt-6">
+		<h2 id="reply" class="display mb-1 text-lg">{m.dash_enquiry_reply()}</h2>
+		<p class="mb-5 text-sm text-muted-foreground">{m.dash_reply_hint()}</p>
+
+		<EmailComposer
+			data={data.form}
+			schema={replySchema()}
+			action="?/reply"
+			recipient="{enquiry.name} <{enquiry.email}>"
+			sendLabel={m.dash_reply_send()}
+			mailReady={data.mailReady}
+		>
+			{#snippet secondary()}
+				<!-- Still here on purpose. Sending from the server means the reply
+				     never appears in the writer's own Sent folder, and sometimes the
+				     right answer is a thread in their own mail client. -->
+				<a href={mailto} class="text-sm text-muted-foreground underline hover:text-foreground">
+					{m.dash_reply_open_client()}
+				</a>
+			{/snippet}
+		</EmailComposer>
+	</section>
+
+	<div class="flex flex-wrap items-center gap-3 border-t pt-6">
 		<form method="POST" action="?/status" use:enhance class="ms-auto flex items-center gap-2">
 			<label for="status" class="text-xs text-muted-foreground">{m.dash_enquiry_mark()}</label>
 			<select

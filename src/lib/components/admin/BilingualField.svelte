@@ -27,6 +27,15 @@
 	 */
 	let {
 		name,
+		/**
+		 * The element id, when it cannot simply be the field name.
+		 *
+		 * The gallery renders one form per image, so several rows post a field
+		 * genuinely called `alt` — but two elements may not share an id on one
+		 * page. This lets the posted name stay stable while the id is made unique
+		 * per row.
+		 */
+		id = undefined,
 		label,
 		value = $bindable(),
 		valueAm = $bindable(),
@@ -51,17 +60,20 @@
 		rows?: number;
 		maxlength?: number;
 		errors?: FieldErrors;
+		id?: string;
 	} = $props();
 
 	let locale = $state<'en' | 'am'>('en');
 
 	const nameAm = $derived(`${name}Am`);
+	const fieldId = $derived(id ?? name);
+	const fieldIdAm = $derived(`${fieldId}Am`);
 	const translated = $derived(Boolean(valueAm?.trim()));
 	const fieldErrors = $derived((errors?.[name] as string[] | undefined) ?? []);
 	const fieldErrorsAm = $derived((errors?.[nameAm] as string[] | undefined) ?? []);
 
-	const errorId = $derived(fieldErrors.length ? `${name}-error` : undefined);
-	const hintId = $derived(hint ? `${name}-hint` : undefined);
+	const errorId = $derived(fieldErrors.length ? `${fieldId}-error` : undefined);
+	const hintId = $derived(hint ? `${fieldId}-hint` : undefined);
 	const describedBy = $derived([hintId, errorId].filter(Boolean).join(' ') || undefined);
 
 	const tabs = $derived([
@@ -72,7 +84,7 @@
 
 <div class="space-y-2">
 	<div class="flex flex-wrap items-center justify-between gap-2">
-		<Label for={locale === 'en' ? name : nameAm} class="text-sm">
+		<Label for={locale === 'en' ? fieldId : fieldIdAm} class="text-sm">
 			{label}
 			{#if required}<span class="text-destructive" aria-hidden="true">*</span>{/if}
 		</Label>
@@ -112,11 +124,11 @@
 	-->
 	<div hidden={locale !== 'en'}>
 		{#if type === 'richtext'}
-			<RichTextEditor id={name} bind:value {placeholder} />
+			<RichTextEditor id={fieldId} bind:value {placeholder} />
 			<input type="hidden" {name} value={value ?? ''} />
 		{:else if type === 'textarea'}
 			<Textarea
-				id={name}
+				id={fieldId}
 				{name}
 				{rows}
 				{placeholder}
@@ -127,7 +139,7 @@
 			/>
 		{:else}
 			<Input
-				id={name}
+				id={fieldId}
 				{name}
 				{placeholder}
 				{maxlength}
@@ -140,11 +152,15 @@
 
 	<div hidden={locale !== 'am'}>
 		{#if type === 'richtext'}
-			<RichTextEditor id={nameAm} bind:value={valueAm} placeholder={placeholderAm || placeholder} />
+			<RichTextEditor
+				id={fieldIdAm}
+				bind:value={valueAm}
+				placeholder={placeholderAm || placeholder}
+			/>
 			<input type="hidden" name={nameAm} value={valueAm ?? ''} />
 		{:else if type === 'textarea'}
 			<Textarea
-				id={nameAm}
+				id={fieldIdAm}
 				name={nameAm}
 				{rows}
 				{maxlength}
@@ -154,7 +170,7 @@
 			/>
 		{:else}
 			<Input
-				id={nameAm}
+				id={fieldIdAm}
 				name={nameAm}
 				{maxlength}
 				placeholder={placeholderAm || placeholder}

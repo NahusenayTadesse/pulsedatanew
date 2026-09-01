@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { MAX_UPLOAD_BYTES, MAX_UPLOAD_MB } from './uploads';
+import { socialPlatforms } from '$lib/social';
 
 /**
  * The dashboard's write schemas.
@@ -197,6 +198,67 @@ export function projectSchema() {
 		id: z.coerce.number().int().positive().optional()
 	});
 }
+
+export function teamSchema() {
+	return z.object({
+		status,
+		sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
+
+		name: z.string().trim().min(1, 'A name is required.').max(200),
+		nameAm: optionalText(200),
+		role: optionalText(200),
+		roleAm: optionalText(200),
+		bio: optionalText(1200),
+		bioAm: optionalText(1200),
+
+		photo: optionalImage,
+		photoAlt: optionalText(255),
+		photoAltAm: optionalText(255),
+
+		/**
+		 * The social profiles.
+		 *
+		 * Rows are checked one at a time in `superRefine` rather than by typing
+		 * `url` as `z.string().url()`, because the repeater always renders a blank
+		 * row to type into — a plain `.url()` would fail the whole form on a row
+		 * nobody touched. A row with no address is dropped by the action; a row
+		 * with one has to be a real address.
+		 */
+		links: z
+			.array(
+				z.object({
+					platform: z.enum(socialPlatforms),
+					url: z.string().trim().max(500)
+				})
+			)
+			.default([])
+			.superRefine((rows, ctx) => {
+				rows.forEach((row, index) => {
+					if (!row.url) return;
+
+					const ok =
+						row.platform === 'email'
+							? z.email().safeParse(row.url).success
+							: z.url().safeParse(row.url).success;
+
+					if (!ok) {
+						ctx.addIssue({
+							code: 'custom',
+							path: [index, 'url'],
+							message:
+								row.platform === 'email'
+									? 'That is not an email address.'
+									: 'That is not a complete web address — include https://.'
+						});
+					}
+				});
+			}),
+
+		id: z.coerce.number().int().positive().optional()
+	});
+}
+
+export type TeamInput = z.infer<ReturnType<typeof teamSchema>>;
 
 export type PostInput = z.infer<ReturnType<typeof postSchema>>;
 export type ProjectInput = z.infer<ReturnType<typeof projectSchema>>;

@@ -17,8 +17,16 @@ const PROTECTED = [
 	'/dashboard/projects/new',
 	'/dashboard/blogs',
 	'/dashboard/blogs/new',
+	'/dashboard/team',
+	'/dashboard/team/new',
 	'/dashboard/enquiries',
-	'/dashboard/enquiries/1/attachment'
+	'/dashboard/enquiries/1/attachment',
+	// The composer sends mail from the company address, so it is exactly the
+	// page an unauthenticated visitor must never reach.
+	'/dashboard/email',
+	// And the record of what was sent holds recipients' addresses and the full
+	// text of every message.
+	'/dashboard/email/sent'
 ];
 
 test.describe('nobody signed in', () => {
@@ -119,6 +127,21 @@ test.describe('signed in', () => {
 		const slug = `suite-article-${stamp}`;
 
 		await page.goto('/dashboard/blogs/new');
+
+		/*
+		 * Wait for hydration before typing.
+		 *
+		 * The slug is filled by a Svelte effect watching the title, and an effect
+		 * cannot see a value the browser put in the field before the component was
+		 * hydrated — the keystrokes land in the DOM and the store never hears about
+		 * them. Filling immediately after `goto` passed on a quiet machine and
+		 * failed whenever the suite ran the rest of its tests alongside this one.
+		 *
+		 * The rich-text toolbar only exists once client JavaScript has mounted, so
+		 * it is the honest signal that the form is live.
+		 */
+		await page.waitForSelector('.tipex-controller', { timeout: 15000 });
+
 		await page.fill('#title', title);
 
 		// The slug is suggested from the title while it is untouched.

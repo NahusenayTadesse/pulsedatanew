@@ -4,6 +4,7 @@
 	import Header from '$lib/components/site/Header.svelte';
 	import Footer from '$lib/components/site/Footer.svelte';
 	import Ambient from '$lib/components/site/Ambient.svelte';
+	import Seo from '$lib/components/site/Seo.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { children } = $props();
@@ -39,6 +40,8 @@
 		});
 	});
 </script>
+
+<Seo />
 
 <Ambient />
 

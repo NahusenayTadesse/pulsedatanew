@@ -1,10 +1,10 @@
 /**
  * Seed content.
  *
- * The site has no admin dashboard yet, so this script is how the first posts
- * and case studies get in. It is idempotent — every row is keyed by slug and
- * upserted — so it can be re-run after an edit without duplicating anything or
- * needing the database dropped.
+ * Idempotent — every row is keyed by slug and upserted — so it can be re-run
+ * after an edit without duplicating anything or needing the database dropped.
+ * The case studies themselves live in `projects.ts` beside this file; what is
+ * here is only the machinery that writes them.
  *
  *   npx tsx scripts/seed.ts
  */
@@ -14,6 +14,7 @@ import { drizzle } from 'drizzle-orm/mysql2';
 import { eq } from 'drizzle-orm';
 import { marked } from 'marked';
 import * as schema from '../src/lib/server/db/schema';
+import { projectSeeds, type ProjectSeed } from './projects';
 
 /**
  * Bodies are authored as markdown in this file and stored as HTML.
@@ -26,110 +27,10 @@ import * as schema from '../src/lib/server/db/schema';
  */
 const html = (markdown: string) => marked.parse(markdown, { async: false }) as string;
 
-const { posts, projects, projectServices, projectOutcomes } = schema;
+const { posts, projects, projectServices, projectOutcomes, projectImages, teamMembers } = schema;
 
 const client = mysql.createPool(process.env.DATABASE_URL!);
 const db = drizzle(client, { schema, mode: 'default' });
-
-const spotless = {
-	slug: 'spotless-enterprise-erp',
-	name: 'Spotless Enterprise ERP',
-	nameAm: 'የስፖትለስ የድርጅት ኢአርፒ',
-	client: 'Spotless',
-	clientAm: 'ስፖትለስ',
-	summary:
-		'An end-to-end ERP for a contract workforce and property management business, unifying multi-branch scheduling, high-volume personnel tracking and payroll into one system.',
-	summaryAm:
-		'ለኮንትራት የሰው ኃይልና የንብረት አስተዳደር ንግድ የተሠራ ሙሉ ኢአርፒ፤ የበርካታ ቅርንጫፍ መርሐ ግብር፣ ከፍተኛ ቁጥር ያለው የሠራተኛ ክትትልና ደመወዝን በአንድ ሥርዓት ያዋሕዳል።',
-	industry: 'Contract workforce & property management',
-	industryAm: 'የኮንትራት የሰው ኃይልና የንብረት አስተዳደር',
-	year: '2025',
-	status: 'published' as const,
-	featured: true,
-	sortOrder: 0,
-	body: `## What Spotless needed
-
-Spotless places security and cleaning personnel on client sites across Addis Ababa, and manages property logistics alongside it. Both halves of that business are people-heavy and site-heavy: hundreds of contract staff, each assigned to a client site, on a shift pattern, at a rate that depends on the contract they sit under.
-
-Before the deployment, that reality lived in spreadsheets and in the heads of the people who maintained them. Attendance came in per site. Payroll was assembled from it by hand each cycle. A client asking "who was on my site last Thursday" was a question that took someone an afternoon.
-
-## What we built
-
-A single ERP covering the operation end to end:
-
-- **Personnel tracking** at the volume the business actually runs at, with each staff member tied to a site, a shift and a contract rate.
-- **Payroll** built from the attendance the system already holds, rather than re-entered from it.
-- **Client CRM** so every contract, site and point of contact is one record instead of a folder.
-- **Operational scheduling** across branches, with the coverage gaps visible before they become a client's complaint rather than after.
-- **Workflow approvals**, so a rate change or a placement is signed off by the person accountable for it.
-
-Alongside the ERP we delivered the digital assets around it — a professional business website and the automated tools that connect to the same data.
-
-## What changed
-
-The administrative bottleneck was the point of the project, and it is gone. Attendance no longer has to be transcribed to become payroll; it already is payroll. The manual tracking errors that came from copying figures between sheets do not have a step to occur in any more.
-
-The part that matters most for Spotless is capacity: the operation can take on more sites without adding the administrative headcount that used to scale alongside them.`,
-	bodyAm: `## ስፖትለስ የሚያስፈልገው
-
-ስፖትለስ በአዲስ አበባ በደንበኞች ቦታዎች ላይ የጥበቃና የጽዳት ሠራተኞችን ያሰማራል፤ ከዚያ ጎን ለጎን የንብረት ሎጂስቲክስንም ያስተዳድራል። የዚህ ንግድ ሁለቱም ክፍሎች በሰውና በቦታ የተሞሉ ናቸው፦ በመቶዎች የሚቆጠሩ የኮንትራት ሠራተኞች፣ እያንዳንዱ ለአንድ የደንበኛ ቦታ የተመደበ፣ በፈረቃ ሥርዓት፣ በሚገኝበት ውል መሠረት በሚወሰን ተመን።
-
-ከዝርጋታው በፊት ይህ እውነታ በሉሆችና እነሱን በሚይዙት ሰዎች ጭንቅላት ውስጥ ይኖር ነበር። የመገኘት መዝገብ ከየቦታው ይመጣል። ደመወዝ በየዑደቱ ከዚያ በእጅ ይሰበሰባል። አንድ ደንበኛ "ባለፈው ሐሙስ በእኔ ቦታ ማን ነበር?" ብሎ መጠየቅ ለአንድ ሰው ግማሽ ቀን የሚወስድ ጥያቄ ነበር።
-
-## የገነባነው
-
-አጠቃላይ ሥራውን የሚሸፍን አንድ ኢአርፒ፦
-
-- **የሠራተኛ ክትትል** ንግዱ በእውነት በሚንቀሳቀስበት መጠን፤ እያንዳንዱ ሠራተኛ ከቦታ፣ ከፈረቃና ከውል ተመን ጋር የተያያዘ።
-- **ደመወዝ** ሥርዓቱ አስቀድሞ ከያዘው የመገኘት መዝገብ ተገንብቶ፤ ከእሱ እንደገና ሳይገባ።
-- **የደንበኛ አስተዳደር** — እያንዳንዱ ውል፣ ቦታና የመገናኛ ሰው አቃፊ ሳይሆን አንድ መዝገብ።
-- **የሥራ መርሐ ግብር** በቅርንጫፎች መካከል፤ የሽፋን ክፍተቶች የደንበኛ ቅሬታ ከመሆናቸው በኋላ ሳይሆን በፊት እንዲታዩ።
-- **የፈቃድ ሂደቶች** — የተመን ለውጥ ወይም ምደባ ተጠያቂ በሆነው ሰው እንዲፈረም።
-
-ከኢአርፒው ጎን ለጎን በዙሪያው ያሉትን ዲጂታል ንብረቶች አቅርበናል — ሙያዊ የንግድ ድረ-ገጽና ከተመሳሳይ ውሂብ ጋር የሚገናኙ አውቶማቲክ መሣሪያዎች።
-
-## የተለወጠው
-
-የአስተዳደር መጨናነቅ የፕሮጀክቱ ዓላማ ነበር፤ አሁን የለም። የመገኘት መዝገብ ደመወዝ ለመሆን መገልበጥ አያስፈልገውም፤ አስቀድሞ ደመወዝ ነው። በሉሆች መካከል ቁጥር ከመገልበጥ ይመጡ የነበሩት የእጅ ስሕተቶች የሚከሰቱበት እርምጃ የላቸውም።
-
-ለስፖትለስ ከሁሉ በላይ የሚያስፈልገው ክፍል አቅም ነው፦ ሥራው ከዚህ በፊት አብሮ ይሰፋ የነበረውን የአስተዳደር ሠራተኛ ሳይጨምር ተጨማሪ ቦታዎችን መያዝ ይችላል።`,
-	publishedAt: new Date('2025-11-15')
-};
-
-const spotlessServices = [
-	{ label: 'HR & Payroll', labelAm: 'የሰው ኃይልና ደመወዝ' },
-	{ label: 'Sales & Customer Management', labelAm: 'ሽያጭና የደንበኛ አስተዳደር' },
-	{ label: 'Operational Scheduling', labelAm: 'የሥራ መርሐ ግብር' },
-	{ label: 'Workflow Approvals', labelAm: 'የፈቃድ ሂደቶች' },
-	{ label: 'Executive Dashboards', labelAm: 'የአመራር ዳሽቦርዶች' },
-	{ label: 'Business Website', labelAm: 'የንግድ ድረ-ገጽ' }
-];
-
-/**
- * Outcomes are written as claims about the system, not as invented percentages.
- *
- * A case study for a 2025 deployment cannot honestly report a measured
- * year-on-year figure, and a made-up one is the fastest way to lose a buyer who
- * asks how it was measured. Replace these with real numbers once Spotless has
- * agreed to them.
- */
-const spotlessOutcomes = [
-	{
-		value: '1',
-		label: 'One system where the operation previously ran on several spreadsheets',
-		labelAm: 'ሥራው ከዚህ በፊት በበርካታ ሉሆች ላይ ይንቀሳቀስበት የነበረበት አንድ ሥርዓት'
-	},
-	{
-		value: '0',
-		label: 'Re-entry steps between attendance and payroll',
-		labelAm: 'ከመገኘት መዝገብ ወደ ደመወዝ የሚደረግ ድጋሚ ግቤት'
-	},
-	{
-		value: '24/7',
-		label: 'Technical support and monitoring since deployment',
-		labelAm: 'ከዝርጋታው ጀምሮ ቴክኒካዊ ድጋፍና ክትትል'
-	}
-];
 
 const articles = [
 	{
@@ -281,46 +182,72 @@ Honestly: discipline, at the start. Everyone has to record the event where it ha
 ];
 
 /** The row as it goes to the database: markdown bodies rendered to HTML. */
-const projectRow = () => ({
-	...spotless,
-	body: html(spotless.body),
-	bodyAm: html(spotless.bodyAm)
-});
 
-async function upsertProject() {
-	const [existing] = await db
-		.select({ id: projects.id })
-		.from(projects)
-		.where(eq(projects.slug, spotless.slug))
-		.limit(1);
+/** The row as it goes to the database: markdown bodies rendered to HTML. */
+const projectRow = (project: ProjectSeed) => {
+	// `services`, `outcomes` and `images` are child tables, not columns on the
+	// project — destructured off here so the rest can be spread straight in.
+	const { services, outcomes, images, websiteUrl, ...columns } = project;
 
-	let id: number;
-	if (existing) {
-		await db.update(projects).set(projectRow()).where(eq(projects.id, existing.id));
-		id = existing.id;
-		// The child rows are replaced wholesale rather than diffed: they are a
-		// short ordered list, and re-running the seed should leave exactly what
-		// this file says, not an accumulation of every version of it.
-		await db.delete(projectServices).where(eq(projectServices.projectId, id));
-		await db.delete(projectOutcomes).where(eq(projectOutcomes.projectId, id));
-	} else {
-		await db.insert(projects).values(projectRow());
-		const [row] = await db
+	return {
+		...columns,
+		status: 'published' as const,
+		websiteUrl: websiteUrl ?? null,
+		body: html(project.body),
+		bodyAm: html(project.bodyAm)
+	};
+};
+
+async function upsertProjects() {
+	for (const [index, project] of projectSeeds.entries()) {
+		const [existing] = await db
 			.select({ id: projects.id })
 			.from(projects)
-			.where(eq(projects.slug, spotless.slug))
+			.where(eq(projects.slug, project.slug))
 			.limit(1);
-		id = row.id;
+
+		const row = { ...projectRow(project), sortOrder: index };
+
+		let id: number;
+		if (existing) {
+			await db.update(projects).set(row).where(eq(projects.id, existing.id));
+			id = existing.id;
+			/*
+			 * The child rows are replaced wholesale rather than diffed: they are
+			 * short ordered lists, and re-running the seed should leave exactly
+			 * what `projects.ts` says, not an accumulation of every version of it.
+			 */
+			await db.delete(projectServices).where(eq(projectServices.projectId, id));
+			await db.delete(projectOutcomes).where(eq(projectOutcomes.projectId, id));
+			await db.delete(projectImages).where(eq(projectImages.projectId, id));
+		} else {
+			await db.insert(projects).values(row);
+			const [created] = await db
+				.select({ id: projects.id })
+				.from(projects)
+				.where(eq(projects.slug, project.slug))
+				.limit(1);
+			id = created.id;
+		}
+
+		if (project.services.length) {
+			await db
+				.insert(projectServices)
+				.values(project.services.map((s, i) => ({ ...s, projectId: id, sortOrder: i })));
+		}
+		if (project.outcomes.length) {
+			await db
+				.insert(projectOutcomes)
+				.values(project.outcomes.map((o, i) => ({ ...o, projectId: id, sortOrder: i })));
+		}
+		if (project.images.length) {
+			await db
+				.insert(projectImages)
+				.values(project.images.map((img, i) => ({ ...img, projectId: id, sortOrder: i })));
+		}
+
+		console.log(`  project: ${project.slug} (${project.images.length} images)`);
 	}
-
-	await db
-		.insert(projectServices)
-		.values(spotlessServices.map((s, i) => ({ ...s, projectId: id, sortOrder: i })));
-	await db
-		.insert(projectOutcomes)
-		.values(spotlessOutcomes.map((o, i) => ({ ...o, projectId: id, sortOrder: i })));
-
-	console.log(`  project: ${spotless.slug}`);
 }
 
 async function upsertPosts() {
@@ -346,8 +273,66 @@ async function upsertPosts() {
 	}
 }
 
+/**
+ * The founding team.
+ *
+ * These three were message-file constants until the team became a table; the
+ * text is carried over verbatim so the about page reads exactly as it did.
+ * Keyed by name rather than a slug, because a person has no URL of their own —
+ * which also means renaming someone in this file inserts a second row rather
+ * than renaming the first. Rename them in the dashboard.
+ *
+ * Nobody has a photograph here, and that is the seeded state on purpose: the
+ * about page shows initials until every published member has one.
+ */
+const team = [
+	{
+		name: 'Surafel Asamnew',
+		role: 'Executive Manager',
+		roleAm: 'ሥራ አስፈጻሚ ሥራ አስኪያጅ',
+		bio: "Leads business strategy, sales and overall operations, guiding Pulsedata's mission to deliver seamless enterprise solutions.",
+		bioAm: 'የንግድ ስትራቴጂን፣ ሽያጭንና አጠቃላይ ሥራዎችን ይመራል፤ ፐልስዳታ እንከን የለሽ የድርጅት መፍትሔዎችን እንዲያቀርብ ተልእኮውን ይመራል።'
+	},
+	{
+		name: 'Nahusenay Tadesse',
+		role: 'Head Developer',
+		roleAm: 'ዋና ገንቢ',
+		bio: 'Oversees core software engineering and technical architecture, driving the development of our high-efficiency proprietary codebase.',
+		bioAm: 'ዋናውን የሶፍትዌር ምህንድስናና ቴክኒካዊ አርክቴክቸር ይቆጣጠራል፤ ከፍተኛ ብቃት ያለውን የራሳችንን ኮድ ልማት ይመራል።'
+	},
+	{
+		name: 'Nahom Yohannes',
+		role: 'Head of Design & UI/UX Art Director',
+		roleAm: 'የዲዛይን ኃላፊ እና የUI/UX አርት ዳይሬክተር',
+		bio: 'Directs visual styling, user experience design and interface standards so that every deployment is intuitive and polished.',
+		bioAm: 'የእይታ ዲዛይንን፣ የተጠቃሚ ተሞክሮ ንድፍንና የገጽታ መስፈርቶችን ይመራል፤ እያንዳንዱ ትግበራ ግልጽና የተጣራ እንዲሆን።'
+	}
+] as const;
+
+async function upsertTeam() {
+	for (const [index, person] of team.entries()) {
+		const row = { ...person, status: 'published' as const, sortOrder: index };
+
+		const [existing] = await db
+			.select({ id: teamMembers.id })
+			.from(teamMembers)
+			.where(eq(teamMembers.name, person.name))
+			.limit(1);
+
+		if (existing) {
+			// `photo` is deliberately not in `row`: re-running the seed must not
+			// wipe a portrait somebody uploaded through the dashboard.
+			await db.update(teamMembers).set(row).where(eq(teamMembers.id, existing.id));
+		} else {
+			await db.insert(teamMembers).values(row);
+		}
+		console.log(`  team: ${person.name}`);
+	}
+}
+
 console.log('Seeding…');
-await upsertProject();
+await upsertProjects();
 await upsertPosts();
+await upsertTeam();
 await client.end();
 console.log('Done.');

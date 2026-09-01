@@ -1,0 +1,27 @@
+{
+	"name": "Pulsedata Solutions",
+	"short_name": "Pulsedata",
+	"description": "ERP software and digital infrastructure for enterprises in Addis Ababa.",
+	"start_url": "/",
+	"display": "standalone",
+	"background_color": "#faf6ef",
+	"theme_color": "#017f81",
+	"icons": [
+		{
+			"src": "/icon-192.png",
+			"type": "image/png",
+			"sizes": "192x192"
+		},
+		{
+			"src": "/icon-512.png",
+			"type": "image/png",
+			"sizes": "512x512"
+		},
+		{
+			"src": "/icon-maskable-512.png",
+			"type": "image/png",
+			"sizes": "512x512",
+			"purpose": "maskable"
+		}
+	]
+}

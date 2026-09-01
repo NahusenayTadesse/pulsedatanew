@@ -11,8 +11,19 @@
 		post,
 		featured = false,
 		/** Stagger, in milliseconds — see `stagger()` in the reveal action. */
-		delay = 0
-	}: { post: PostCard; featured?: boolean; delay?: number } = $props();
+		delay = 0,
+		/**
+		 * The heading level this card's title uses.
+		 *
+		 * A card is a heading in the page outline, not a decoration, so the level
+		 * has to match where the list sits: directly under the page's `h1` it is
+		 * an `h2`, and inside a section that has its own `h2` it is an `h3`.
+		 * Hard-coding `h3` skipped a level on every index page — invisible on
+		 * screen, and the thing that makes heading navigation useless for anyone
+		 * moving through the page with a screen reader.
+		 */
+		level = 3
+	}: { post: PostCard; featured?: boolean; delay?: number; level?: 2 | 3 } = $props();
 
 	const title = $derived(pick(post.title, post.titleAm));
 	const excerpt = $derived(pick(post.excerpt, post.excerptAm));
@@ -66,13 +77,14 @@
 			{/if}
 		</div>
 
-		<h3
+		<svelte:element
+			this={`h${level}`}
 			class="display transition-colors group-hover:text-primary {featured
 				? 'text-2xl sm:text-3xl'
 				: 'text-xl'}"
 		>
 			{title}
-		</h3>
+		</svelte:element>
 
 		{#if excerpt}
 			<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{excerpt}</p>

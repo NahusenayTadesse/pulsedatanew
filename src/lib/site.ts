@@ -8,15 +8,22 @@
  * the open items in BUILD.md.
  */
 export const CONTACT = {
-	email: '',
-	phone: '',
-	/** The `tel:` form — no spaces or punctuation. */
-	phoneHref: '',
+	email: 'info@pulsedataet.com',
+	phone: '0947 340 602',
+	/**
+	 * The `tel:` form — no spaces or punctuation, and in international format.
+	 *
+	 * `tel:` is consumed by a phone, not a person: the local `09…` form fails
+	 * for anyone dialling from outside Ethiopia, and a prospective client
+	 * abroad is exactly who taps a number on a website rather than typing it.
+	 * `Footer` and the contact page prefix `tel:` themselves.
+	 */
+	phoneHref: '+251947340602',
 	city: 'Addis Ababa',
 	country: 'Ethiopia'
 } as const;
 
 /** The canonical origin, for `og:` tags and the sitemap. */
-export const SITE_URL = 'https://pulsedata.et';
+export const SITE_URL = 'https://pulsedataet.com';
 
 export const SOCIAL: { label: string; href: string }[] = [];

@@ -7,7 +7,21 @@
 	import { reveal } from '$lib/actions/reveal';
 	import * as m from '$lib/paraglide/messages';
 
-	let { project, delay = 0 }: { project: ProjectCard; delay?: number } = $props();
+	let {
+		project,
+		delay = 0,
+		/**
+		 * The heading level this card's title uses.
+		 *
+		 * A card is a heading in the page outline, not a decoration, so the level
+		 * has to match where the list sits: directly under the page's `h1` it is
+		 * an `h2`, and inside a section that has its own `h2` it is an `h3`.
+		 * Hard-coding `h3` skipped a level on every index page — invisible on
+		 * screen, and the thing that makes heading navigation useless for anyone
+		 * moving through the page with a screen reader.
+		 */
+		level = 3
+	}: { project: ProjectCard; delay?: number; level?: 2 | 3 } = $props();
 
 	const name = $derived(pick(project.name, project.nameAm));
 	const client = $derived(pick(project.client, project.clientAm));
@@ -60,7 +74,12 @@
 			{/if}
 		</dl>
 
-		<h3 class="display text-2xl transition-colors group-hover:text-primary">{name}</h3>
+		<svelte:element
+			this={`h${level}`}
+			class="display text-2xl transition-colors group-hover:text-primary"
+		>
+			{name}
+		</svelte:element>
 
 		{#if summary}
 			<p class="mt-3 text-sm leading-relaxed text-muted-foreground">{summary}</p>

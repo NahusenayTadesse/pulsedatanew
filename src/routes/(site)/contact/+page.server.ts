@@ -6,6 +6,8 @@ import { db } from '$lib/server/db';
 import { contactSubmissions } from '$lib/server/db/schema';
 import { contactSchema } from '$lib/forms/contact';
 import { saveUploadedFile, deleteUploadedFile, UploadError } from '$lib/server/upload';
+import { notifyAddress, sendMail } from '$lib/server/mail/transport';
+import { contactAcknowledgement, enquiryNotification } from '$lib/server/mail/templates';
 import { getLocale } from '$lib/paraglide/runtime';
 import * as m from '$lib/paraglide/messages';
 import type { Actions, PageServerLoad } from './$types';
@@ -71,13 +73,15 @@ export const actions: Actions = {
 		 * not exist, which is worse.
 		 */
 		let attachment: string | null = null;
+		// Assigned by the insert below; every path that skips it returns first.
+		let enquiryId!: number;
 
 		try {
 			if (form.data.attachment && form.data.attachment.size > 0) {
 				attachment = await saveUploadedFile(form.data.attachment, { private: true });
 			}
 
-			await db.insert(contactSubmissions).values({
+			const [result] = await db.insert(contactSubmissions).values({
 				name: form.data.name,
 				email: form.data.email.toLowerCase(),
 				phone: form.data.phone || null,
@@ -90,6 +94,8 @@ export const actions: Actions = {
 				ipAddress,
 				userAgent: request.headers.get('user-agent')?.slice(0, 500) ?? null
 			});
+
+			enquiryId = Number(result.insertId);
 		} catch (err) {
 			if (attachment) await deleteUploadedFile(attachment, { private: true }).catch(() => {});
 
@@ -100,6 +106,63 @@ export const actions: Actions = {
 			console.error('[contact] failed to record submission', err);
 			return fail(500, withFiles({ form, serverError: true }));
 		}
+
+		/*
+		 * The mail is sent after the row is safely stored, and its failure is
+		 * swallowed on purpose.
+		 *
+		 * The enquiry is already recorded and visible on the dashboard by this
+		 * point. Turning an SMTP timeout into an error page would tell someone
+		 * their message did not arrive when it did, and they would send it again
+		 * — so a mail problem is logged for us and invisible to them.
+		 */
+		const enquiry = {
+			id: enquiryId,
+			name: form.data.name,
+			email: form.data.email.toLowerCase(),
+			phone: form.data.phone || null,
+			company: form.data.company || null,
+			topic: form.data.topic,
+			message: form.data.message,
+			locale: getLocale(),
+			attachmentName: form.data.attachment?.name ?? null,
+			createdAt: new Date()
+		};
+
+		const team = notifyAddress();
+
+		await Promise.allSettled([
+			// The acknowledgement, in the language they wrote in.
+			sendMail({
+				to: enquiry.email,
+				replyTo: team ?? undefined,
+				kind: 'acknowledgement',
+				enquiryId: enquiry.id,
+				...contactAcknowledgement(enquiry)
+			}),
+			/*
+			 * The notification — the reason mail exists here at all. Without it an
+			 * enquiry sits in a database table until somebody thinks to look.
+			 *
+			 * `replyTo` is the sender, so hitting reply in the inbox answers the
+			 * client rather than the website.
+			 */
+			team
+				? sendMail({
+						to: team,
+						replyTo: enquiry.email,
+						kind: 'notification',
+						enquiryId: enquiry.id,
+						...enquiryNotification(enquiry)
+					})
+				: Promise.resolve()
+		]).then((results) => {
+			for (const outcome of results) {
+				if (outcome.status === 'rejected') {
+					console.error('[contact] notification mail failed', outcome.reason);
+				}
+			}
+		});
 
 		return withFiles(message(form, m.contact_success_body()));
 	}

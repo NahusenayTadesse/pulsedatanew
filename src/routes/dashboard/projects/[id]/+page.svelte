@@ -2,10 +2,11 @@
 	import { ExternalLink } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import ProjectForm from '$lib/components/admin/ProjectForm.svelte';
+	import ProjectGallery from '$lib/components/admin/ProjectGallery.svelte';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
-	let { data } = $props();
+	let { data, form } = $props();
 </script>
 
 <div class="space-y-6">
@@ -28,4 +29,20 @@
 		clientLogo={data.clientLogo}
 		deletable
 	/>
+
+	<!--
+		Outside `ProjectForm` on purpose: the gallery posts to its own actions, and
+		a form cannot be nested inside another form.
+	-->
+	{#if form?.galleryError}
+		<p class="rounded-md border border-destructive/40 bg-destructive/5 p-3 text-sm">
+			{form.galleryError}
+		</p>
+	{:else if form?.galleryMessage}
+		<p class="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm text-primary">
+			{form.galleryMessage}
+		</p>
+	{/if}
+
+	<ProjectGallery images={data.images} />
 </div>

@@ -40,6 +40,30 @@ export function baseAuthOptions(options: {
 		emailAndPassword: {
 			enabled: true,
 			disableSignUp: !options.allowSignUp
+		},
+		/*
+		 * Rate limiting for Better Auth's own HTTP endpoints.
+		 *
+		 * The login *form* is throttled separately in `$lib/server/throttle`,
+		 * because a SvelteKit action calls `auth.api.signInEmail()` as a function
+		 * and never passes through this handler. This covers the other door:
+		 * `POST /api/auth/sign-in/email` is mounted and reachable directly, so
+		 * without it an attacker simply skips the form and the throttle with it.
+		 *
+		 * `enabled` is set explicitly because Better Auth turns rate limiting off
+		 * outside production — which would mean the protection was never
+		 * exercised until the day it mattered.
+		 */
+		rateLimit: {
+			enabled: true,
+			storage: 'database',
+			window: 60,
+			max: 30,
+			customRules: {
+				// Matches the form throttle: five tries, then a quarter of an hour.
+				'/sign-in/email': { window: 900, max: 5 },
+				'/sign-up/email': { window: 900, max: 3 }
+			}
 		}
 	} satisfies Parameters<typeof betterAuth>[0];
 }

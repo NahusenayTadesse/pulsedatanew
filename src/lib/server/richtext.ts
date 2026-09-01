@@ -1,4 +1,4 @@
-import DOMPurify from 'isomorphic-dompurify';
+import sanitizeHtml from 'sanitize-html';
 
 /**
  * Sanitising and measuring the rich text an editor produces.
@@ -15,6 +15,21 @@ import DOMPurify from 'isomorphic-dompurify';
  * enforced by there being exactly one function that returns renderable HTML.
  * It also means tightening this list retroactively protects content that is
  * already in the database.
+ *
+ * **Why `sanitize-html` and not DOMPurify.** DOMPurify needs a DOM, so on the
+ * server it came with jsdom — and jsdom does not survive being bundled. One of
+ * its dependencies reaches for a JSON file at runtime with
+ * `require('../data/patch.json')`, a path that exists in `node_modules` and not
+ * in `build/server/chunks/`, so the built site threw
+ * `Cannot find module '../data/patch.json'` the first time anything imported
+ * this file. Every page that renders stored HTML — every article, every case
+ * study, both dashboard composers — answered 500 in production while passing
+ * locally, because `vite preview` leaves dependencies external and only the
+ * real build inlines them.
+ *
+ * `sanitize-html` parses HTML directly instead of emulating a browser, so it
+ * bundles as ordinary JavaScript, and it takes roughly forty megabytes of jsdom
+ * out of the server bundle on the way past.
  */
 
 const ALLOWED_TAGS = [
@@ -49,29 +64,48 @@ const ALLOWED_TAGS = [
 export function renderRichText(source: string | null | undefined): string {
 	if (!source?.trim()) return '';
 
-	return DOMPurify.sanitize(source, {
-		ALLOWED_TAGS,
-		ALLOWED_ATTR: [
-			'href',
-			'title',
-			'src',
-			'alt',
-			'width',
-			'height',
-			'colspan',
-			'rowspan',
-			'target',
-			'rel'
-		],
+	return sanitizeHtml(source, {
+		allowedTags: ALLOWED_TAGS,
 		/*
-		 * `h1` is the page's own title, so a body that sets another would give
-		 * the document two — a real problem for anyone navigating by heading, and
-		 * something an editor's heading dropdown makes easy to do by accident.
+		 * The same attributes on every tag, as the previous allowlist was.
+		 *
+		 * Anything not named here is dropped, which covers every `on*` handler
+		 * and every `data-*` attribute without having to enumerate them.
 		 */
-		FORBID_TAGS: ['h1', 'style', 'script', 'iframe', 'form', 'input'],
-		ALLOW_DATA_ATTR: false,
-		/* Blocks `javascript:` and `data:` URLs in href and src. */
-		ALLOWED_URI_REGEXP: /^(?:https?:|mailto:|tel:|\/|#)/i
+		allowedAttributes: {
+			'*': ['href', 'title', 'src', 'alt', 'width', 'height', 'colspan', 'rowspan', 'target', 'rel']
+		},
+		/*
+		 * `h1`, `script`, `style`, `iframe`, `form` and `input` are simply absent
+		 * from `ALLOWED_TAGS`, which drops the tag and keeps the text inside it —
+		 * the same thing DOMPurify's `FORBID_TAGS` did. `script` and `style` are
+		 * the exception on purpose: their *contents* go too, which is the default
+		 * here and what `nonTextTags` below spells out rather than leaves implied.
+		 */
+		nonTextTags: ['script', 'style', 'textarea', 'option', 'noscript'],
+
+		/** What a link or an image may point at. */
+		allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+		allowedSchemesAppliedToAttributes: ['href', 'src'],
+		/*
+		 * `//evil.example` is a URL to another host that merely looks relative.
+		 * The old regexp allowed it — it starts with `/` — which made a
+		 * protocol-relative link to anywhere pass the filter. It does not now.
+		 */
+		allowProtocolRelative: false,
+
+		transformTags: {
+			/*
+			 * A link that opens a new tab hands the opened page a `window.opener`
+			 * reference to ours unless it is told not to. Editors set `target`
+			 * from a toolbar button and cannot be expected to know that, so the
+			 * counter-measure is added here rather than asked for.
+			 */
+			a: (tagName, attribs) => ({
+				tagName,
+				attribs: attribs.target ? { ...attribs, rel: 'noopener noreferrer' } : attribs
+			})
+		}
 	});
 }
 

@@ -3,11 +3,12 @@
 	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
-	import { CircleAlert } from '@lucide/svelte';
+	import { CircleAlert, Eye, EyeOff } from '@lucide/svelte';
 	import SelectComp from './SelectComp.svelte';
 	import type { FieldErrors, Item } from './types';
 	import FileUpload from './FileUpload.svelte';
 	import { cn } from '$lib/utils.js';
+	import * as m from '$lib/paraglide/messages';
 
 	/**
 	 * One labelled control, with its label, hint and error message.
@@ -77,6 +78,17 @@
 	 * the problem — announcing only the error loses the format the field wants.
 	 */
 	const describedBy = $derived([hintId, errorId].filter(Boolean).join(' ') || undefined);
+
+	/**
+	 * Password reveal.
+	 *
+	 * Lives here rather than on the login page so every password field behaves the
+	 * same way. The state is deliberately local and starts false on each mount: a
+	 * revealed password should not survive a navigation back to the form.
+	 */
+	let revealed = $state(false);
+	const isPassword = $derived(type === 'password');
+	const inputType = $derived(isPassword && revealed ? 'text' : type);
 </script>
 
 <div class={cn('space-y-2', className)}>
@@ -129,19 +141,42 @@
 			<Label for={controlId} class="text-sm leading-snug font-normal">{label}</Label>
 		</div>
 	{:else}
-		<Input
-			id={controlId}
-			{name}
-			{type}
-			{placeholder}
-			{autocomplete}
-			{maxlength}
-			bind:value
-			aria-invalid={invalid || undefined}
-			aria-describedby={describedBy}
-			aria-required={required || undefined}
-			{...rest}
-		/>
+		<div class="relative">
+			<Input
+				id={controlId}
+				{name}
+				type={inputType}
+				{placeholder}
+				{autocomplete}
+				{maxlength}
+				bind:value
+				aria-invalid={invalid || undefined}
+				aria-describedby={describedBy}
+				aria-required={required || undefined}
+				class={isPassword ? 'pr-10' : undefined}
+				{...rest}
+			/>
+			{#if isPassword}
+				<!-- `aria-label` rather than a visible label, and it names the action
+				     about to happen, so a screen reader hears "Show password" while
+				     the password is hidden. Not a submit button: inside a form, a
+				     button with no type submits it. -->
+				<button
+					type="button"
+					onclick={() => (revealed = !revealed)}
+					aria-label={revealed ? m.login_password_hide() : m.login_password_show()}
+					aria-pressed={revealed}
+					aria-controls={controlId}
+					class="absolute inset-y-0 right-0 flex w-10 items-center justify-center rounded-r-md text-muted-foreground transition-colors hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+				>
+					{#if revealed}
+						<EyeOff class="size-4" aria-hidden="true" />
+					{:else}
+						<Eye class="size-4" aria-hidden="true" />
+					{/if}
+				</button>
+			{/if}
+		</div>
 	{/if}
 
 	{#if hint}

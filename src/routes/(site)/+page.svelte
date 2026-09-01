@@ -8,10 +8,64 @@
 	import ProjectCard from '$lib/components/site/ProjectCard.svelte';
 	import PostCard from '$lib/components/site/PostCard.svelte';
 	import { reveal, stagger } from '$lib/actions/reveal';
-	import { SITE_URL } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
+	import JsonLd from '$lib/components/site/JsonLd.svelte';
+	import { CONTACT, SITE_URL, SOCIAL } from '$lib/site';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
+
+	/**
+	 * Who the company is, in the form a search engine can act on.
+	 *
+	 * On the home page only. `Organization` describes the business, not the
+	 * document, so repeating it on every page says the same thing five times and
+	 * risks a crawler treating the about page as a second company. `@id` gives
+	 * every other block on the site one thing to point at.
+	 *
+	 * Fields with no value are dropped rather than emitted empty — an
+	 * `Organization` with `"telephone": ""` is worse than one with no telephone,
+	 * because it asserts something false about a business people are deciding
+	 * whether to trust.
+	 */
+	const organisation = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		'@id': `${SITE_URL}/#organization`,
+		name: m.site_name(),
+		alternateName: 'Pulsedata',
+		url: SITE_URL,
+		logo: `${SITE_URL}/icon-512.png`,
+		image: OG_IMAGE,
+		description: m.site_description(),
+		slogan: m.site_tagline(),
+		address: {
+			'@type': 'PostalAddress',
+			addressLocality: CONTACT.city,
+			addressCountry: 'ET'
+		},
+		...(CONTACT.email ? { email: CONTACT.email } : {}),
+		// The E.164 form, not the printed one: `telephone` here is read by
+		// machines, and a local `09…` number is unusable from outside Ethiopia.
+		...(CONTACT.phoneHref ? { telephone: CONTACT.phoneHref } : {}),
+		...(SOCIAL.length ? { sameAs: SOCIAL.map((link) => link.href) } : {})
+	});
+
+	/**
+	 * The site itself, and how to search it — which is what earns a sitelinks
+	 * search box. Named separately from the organisation because they are
+	 * different things: one is a company, the other is a website it publishes.
+	 */
+	const website = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		'@id': `${SITE_URL}/#website`,
+		url: SITE_URL,
+		name: m.site_name(),
+		description: m.site_description(),
+		inLanguage: ['en', 'am'],
+		publisher: { '@id': `${SITE_URL}/#organization` }
+	});
 
 	const modules = $derived([
 		{ name: m.module_finance(), body: m.module_finance_body() },
@@ -71,8 +125,11 @@
 	<meta property="og:title" content="{m.site_name()} — {m.site_tagline()}" />
 	<meta property="og:description" content={m.site_description()} />
 	<meta property="og:type" content="website" />
-	<meta property="og:image" content="{SITE_URL}/longLogo.png" />
+	<meta property="og:image" content={OG_IMAGE} />
 </svelte:head>
+
+<JsonLd data={organisation} />
+<JsonLd data={website} />
 
 <!-- Hero -->
 <section class="mx-auto max-w-6xl px-5 pt-16 pb-16 sm:px-8 sm:pt-24 sm:pb-20">

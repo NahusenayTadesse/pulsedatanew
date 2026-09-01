@@ -4,6 +4,21 @@
 	<head>
 		<meta charset="utf-8" />
 
+		<!--
+			The icon set, in the order browsers look for it. `favicon.ico` carries
+			16/32/48 in one file, which is still what a browser fetches by habit even
+			when it is never linked; linking it keeps that request from being a guess.
+			The mark is drawn tighter inside the tile at the small sizes — the thin
+			outline strokes of the full logo disappear below about 24px.
+		-->
+		<link rel="icon" href="/favicon.ico" sizes="32x32" />
+		<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+		<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+		<link rel="manifest" href="/site.webmanifest" />
+		<!-- Tints the browser chrome on Android and the tab strip in some desktop
+		     browsers. The teal is the same one the logo tile uses. -->
+		<meta name="theme-color" content="#017f81" />
+
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 		<meta name="text-scale" content="scale" />

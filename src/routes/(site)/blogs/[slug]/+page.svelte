@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { ArrowLeft } from '@lucide/svelte';
-	import { page } from '$app/state';
 	import { localizeHref, getLocale } from '$lib/paraglide/runtime';
 	import { assetUrl } from '$lib/assets';
 	import { pick, isTranslated } from '$lib/i18n';
@@ -9,6 +8,8 @@
 	import ScrollProgress from '$lib/components/site/ScrollProgress.svelte';
 	import { reveal, stagger } from '$lib/actions/reveal';
 	import { SITE_URL } from '$lib/site';
+	import { OG_IMAGE } from '$lib/seo';
+	import JsonLd from '$lib/components/site/JsonLd.svelte';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -32,22 +33,49 @@
 				}).format(new Date(post.publishedAt))
 			: ''
 	);
-
-	const canonical = $derived(`${SITE_URL}${page.url.pathname}`);
+	/**
+	 * The article, as structured data.
+	 *
+	 * `mainEntityOfPage` is the canonical URL rather than the current one, so the
+	 * English and Amharic versions of a post do not describe themselves as two
+	 * different articles. The publisher points at the organisation declared on
+	 * the home page instead of repeating it — that `@id` is what makes the two
+	 * blocks one graph.
+	 *
+	 * An article with no `datePublished` is left without the field: a crawler
+	 * that reads a made-up date is worse off than one that reads none.
+	 */
+	const articleLd = $derived({
+		'@context': 'https://schema.org',
+		'@type': 'BlogPosting',
+		headline: title,
+		description,
+		inLanguage: getLocale(),
+		mainEntityOfPage: {
+			'@type': 'WebPage',
+			'@id': `${SITE_URL}${localizeHref(`/blogs/${post.slug}`)}`
+		},
+		image: cover ? `${SITE_URL}${cover}` : OG_IMAGE,
+		...(author ? { author: { '@type': 'Person', name: author } } : {}),
+		publisher: { '@id': `${SITE_URL}/#organization` },
+		...(post.publishedAt ? { datePublished: new Date(post.publishedAt).toISOString() } : {}),
+		...(post.updatedAt ? { dateModified: new Date(post.updatedAt).toISOString() } : {})
+	});
 </script>
 
 <svelte:head>
 	<title>{title} · {m.site_name()}</title>
 	<meta name="description" content={description} />
-	<link rel="canonical" href={canonical} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
 	<meta property="og:type" content="article" />
-	<meta property="og:image" content={cover ? `${SITE_URL}${cover}` : `${SITE_URL}/longLogo.png`} />
+	<meta property="og:image" content={cover ? `${SITE_URL}${cover}` : OG_IMAGE} />
 	{#if post.publishedAt}
 		<meta property="article:published_time" content={new Date(post.publishedAt).toISOString()} />
 	{/if}
 </svelte:head>
+
+<JsonLd data={articleLd} />
 
 <ScrollProgress />
 
@@ -92,7 +120,7 @@
 	{/if}
 
 	<!-- The only `@html` on the site. Its input is `renderRichText`, which
-	     sanitises with DOMPurify before returning. -->
+	     sanitises before returning. -->
 	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	<div class="prose mt-10 pb-16">{@html body}</div>
 </article>

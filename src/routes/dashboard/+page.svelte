@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import EnquiryStatus from '$lib/components/admin/EnquiryStatus.svelte';
+	import TrafficPanel from '$lib/components/admin/TrafficPanel.svelte';
 	import { formatDateTime } from '$lib/components/admin/format';
 	import * as m from '$lib/paraglide/messages';
 
@@ -41,6 +42,8 @@
 			</div>
 		{/each}
 	</dl>
+
+	<TrafficPanel traffic={data.traffic} series={data.series} startedAt={data.startedAt} />
 
 	<section aria-labelledby="recent">
 		<div class="mb-4 flex items-center justify-between">

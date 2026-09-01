@@ -23,6 +23,7 @@
 		hint = '',
 		rows = $bindable(),
 		blank,
+		isBlank = (row: Row) => Object.values(row).every((value) => !value?.trim()),
 		row: rowSnippet
 	}: {
 		label: string;
@@ -30,6 +31,17 @@
 		rows: Row[];
 		/** A fresh empty row. A function, so each call gets its own object. */
 		blank: () => Row;
+		/**
+		 * Whether a row counts as untouched.
+		 *
+		 * The default — every field empty — is right for a row of free text, and
+		 * wrong for any row with a pre-set field. The social links start on a
+		 * chosen platform, so a blank row is never "all empty": the effect below
+		 * decided the last row was filled, appended another, and looped until
+		 * Svelte gave up with `effect_update_depth_exceeded`. A list whose
+		 * blankness is decided by one field passes its own test.
+		 */
+		isBlank?: (row: Row) => boolean;
 		/**
 		 * Renders one row. Receives the row, a setter for it, and its index.
 		 *
@@ -56,8 +68,7 @@
 	 */
 	$effect(() => {
 		const last = rows.at(-1);
-		const lastIsBlank = last && Object.values(last).every((value) => !value?.trim());
-		if (!lastIsBlank) rows = [...rows, blank()];
+		if (!last || !isBlank(last)) rows = [...rows, blank()];
 	});
 
 	/** Replaces one row with a patched copy, so `rows` gets a new identity. */

@@ -4,6 +4,7 @@ import { message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { auth } from '$lib/server/auth';
 import { loginSchema } from '$lib/forms/auth';
+import { clearFailedLogins, loginBlocked, recordFailedLogin } from '$lib/server/throttle';
 import { localizeHref } from '$lib/paraglide/runtime';
 import * as m from '$lib/paraglide/messages';
 import type { Actions, PageServerLoad } from './$types';
@@ -36,6 +37,20 @@ export const actions: Actions = {
 		const form = await superValidate(event.request, zod4(loginSchema()));
 		if (!form.valid) return fail(400, { form });
 
+		const identifier = form.data.email.trim().toLowerCase();
+		const ipAddress = event.getClientAddress();
+
+		/*
+		 * Checked before the password is verified, not after.
+		 *
+		 * Verifying a hash is deliberately expensive, so an attacker who is
+		 * already locked out but still costs us a full verification per attempt
+		 * has been given a way to exhaust the server rather than a way in.
+		 */
+		if (await loginBlocked(identifier, ipAddress)) {
+			return message(form, m.login_throttled(), { status: 429 });
+		}
+
 		try {
 			await auth.api.signInEmail({
 				body: { email: form.data.email, password: form.data.password },
@@ -52,10 +67,17 @@ export const actions: Actions = {
 			 * field is served just as well by being asked to check both.
 			 */
 			if (error instanceof APIError) {
+				// Recorded for addresses that do not exist too — see the note in
+				// `$lib/server/throttle`. Locking only real accounts would tell an
+				// attacker which addresses are real.
+				await recordFailedLogin(identifier, ipAddress);
 				return message(form, m.login_failed(), { status: 401 });
 			}
 			throw error;
 		}
+
+		// The password was right, so the run of failures is over.
+		await clearFailedLogins(identifier);
 
 		redirect(303, localizeHref(safeRedirect(event.url.searchParams.get('redirectTo'))));
 	}

@@ -7,7 +7,10 @@
 		Inbox,
 		LayoutDashboard,
 		LogOut,
-		Menu
+		Mails,
+		Menu,
+		Send,
+		Users
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import * as Sheet from '$lib/components/ui/sheet/index.js';
@@ -25,12 +28,15 @@
 		{ href: '/dashboard', label: m.dash_overview(), icon: LayoutDashboard, exact: true },
 		{ href: '/dashboard/projects', label: m.dash_projects(), icon: Briefcase },
 		{ href: '/dashboard/blogs', label: m.dash_blogs(), icon: FileText },
+		{ href: '/dashboard/team', label: m.dash_team(), icon: Users },
 		{
 			href: '/dashboard/enquiries',
 			label: m.dash_enquiries(),
 			icon: Inbox,
 			badge: data.unreadEnquiries
-		}
+		},
+		{ href: '/dashboard/email', label: m.dash_compose(), icon: Send, exact: true },
+		{ href: '/dashboard/email/sent', label: m.dash_mail_sent(), icon: Mails }
 	]);
 
 	const path = $derived(deLocalizeHref(page.url.pathname));

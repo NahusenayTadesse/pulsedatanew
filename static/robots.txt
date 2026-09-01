@@ -1,3 +1,16 @@
-# allow crawling everything by default
+# The public site is open to crawlers.
 User-agent: *
-Disallow:
+Allow: /
+
+# The private half. These also send `X-Robots-Tag: noindex, nofollow`
+# (see hooks.server.ts), which is what actually keeps them out of an index —
+# a Disallow only asks a crawler not to fetch them.
+Disallow: /dashboard
+Disallow: /login
+Disallow: /logout
+
+# The uptime endpoint. Nothing to index, and a crawler hitting it every few
+# minutes is a database query for no reason.
+Disallow: /health
+
+Sitemap: https://pulsedataet.com/sitemap.xml

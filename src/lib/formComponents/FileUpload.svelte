@@ -122,7 +122,10 @@
 
 <div class="space-y-2">
 	{#if label}
-		<span class="text-sm leading-none font-medium">{label}</span>
+		<!-- A real `<label for>`, not a span: without the association the field is
+		     announced as an unlabelled file input, and clicking the caption does
+		     not open the picker. -->
+		<label for={name} class="block text-sm leading-none font-medium">{label}</label>
 	{/if}
 
 	<!-- svelte-ignore a11y_no_static_element_interactions -->

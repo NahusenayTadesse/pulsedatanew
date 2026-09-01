@@ -44,8 +44,15 @@
 </script>
 
 <Select.Root type="single" bind:value {name} {disabled}>
+	<!--
+		`role="combobox"` rather than the button role bits-ui gives the trigger.
+		This is a select-only combobox in ARIA 1.2 terms, and it is the role that
+		actually permits `aria-required` — on a plain button that attribute is
+		invalid and is dropped, so the field was never announced as required.
+	-->
 	<Select.Trigger
 		id={controlId}
+		role="combobox"
 		aria-invalid={invalid || undefined}
 		aria-describedby={describedBy}
 		aria-required={required || undefined}
