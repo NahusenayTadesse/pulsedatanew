@@ -95,7 +95,7 @@ const bodyHtml = `
 
 <p>We are writing in response to your search for an ERP system covering both office
 operations and workshop or production activity. Pulsedata Solutions is an Addis Ababa
-software company that builds and deploys exactly that — a modular ERP suite on our own
+software company that builds and deploys exactly that: a modular ERP suite on our own
 codebase, delivered and supported by the people who wrote it.</p>
 
 <p>Your nine areas map onto the suite one for one:</p>
@@ -113,13 +113,13 @@ ledger sit in the same database, so a material issued on the floor is already a 
 job and already a movement in stock. No monthly re-entry, no reconciliation between
 systems.</li>
 <li><strong>Our own codebase.</strong> Nothing is locked behind a vendor, so a change your
-operation genuinely needs is a change we can make — and there is no per-seat licence stack
+operation genuinely needs is a change we can make, and there is no per-seat licence stack
 underneath ours.</li>
 <li><strong>Light enough to run anywhere.</strong> The system is engineered to hold
 performance on modest hardware: in practice a mid-range machine and an ordinary connection
 are enough, which matters when power and bandwidth are not guaranteed.</li>
 <li><strong>Built for here.</strong> English and Amharic throughout, and the Ethiopian
-calendar where the business actually uses it — payroll periods and leave accrual
+calendar where the business actually uses it, with payroll periods and leave accrual
 included.</li>
 <li><strong>Two ways to own it.</strong> A perpetual licence with lifelong support, or an
 all-inclusive SaaS subscription on managed cloud infrastructure. Both come with 24/7
@@ -131,7 +131,7 @@ support, staff training, security updates and routine backups.</li>
 <p>Our closest reference is <strong>Spotless</strong>, a contract-workforce and facility
 management business we have run on a full deployment since 2025: HR and the employee
 lifecycle, a leave accrual and expiry engine, Ethiopian-calendar payroll, client contracts
-and site billing, supply leasing and stock, a bank ledger and expenses — with maker-checker
+and site billing, supply leasing and stock, a bank ledger and expenses, with maker-checker
 approvals, role-based permissions and an audit log across more than fifty screens. Payroll
 posts to the ledger with no re-entry step in between.</p>
 
@@ -146,8 +146,8 @@ Events, Fahem General Trading, Golla Design Group and Lalo Group. Ten systems ar
 
 <p>We would like to visit your office and workshop for a short discovery session, see how
 the work is actually done, and follow it with a live demonstration of the suite against your
-own processes. A scoped proposal — module list, deployment model, timeline and a fixed
-figure — follows that visit rather than preceding it, because a number quoted before anyone
+own processes. A scoped proposal (module list, deployment model, timeline and a fixed
+figure) follows that visit rather than preceding it, because a number quoted before anyone
 has walked the floor is a number nobody should trust.</p>
 
 <p>Our company profile is attached, and further detail on the work described above is on our
@@ -181,7 +181,7 @@ const { html, text } = renderEmail({
 	footer: ['Addis Ababa, Ethiopia', 'info@pulsedataet.com', '0947 340 602']
 });
 
-const subject = 'ERP proposal — Pulsedata Solutions (office & workshop operations)';
+const subject = 'ERP proposal · Pulsedata Solutions (office & workshop operations)';
 const outDir = path.resolve('.proposal-preview');
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, 'proposal.html'), html);

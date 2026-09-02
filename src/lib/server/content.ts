@@ -7,7 +7,8 @@ import {
 	projectOutcomes,
 	projectServices,
 	teamMemberLinks,
-	teamMembers
+	teamMembers,
+	testimonials
 } from '$lib/server/db/schema';
 
 /**
@@ -138,7 +139,7 @@ export async function getProject(slug: string) {
 
 	if (!project) return null;
 
-	const [services, outcomes, images] = await Promise.all([
+	const [services, outcomes, images, quotes] = await Promise.all([
 		db
 			.select()
 			.from(projectServices)
@@ -153,10 +154,23 @@ export async function getProject(slug: string) {
 			.select()
 			.from(projectImages)
 			.where(eq(projectImages.projectId, project.id))
-			.orderBy(asc(projectImages.sortOrder))
+			.orderBy(asc(projectImages.sortOrder)),
+		/*
+		 * The quotes given about this project.
+		 *
+		 * Plural: one client can say more than one thing, and a case study that
+		 * could only ever carry a single testimonial would be a column on
+		 * `projects` instead of a table. Draft quotes are excluded here as
+		 * everywhere else — this is a public read.
+		 */
+		db
+			.select(testimonialCard)
+			.from(testimonials)
+			.where(and(eq(testimonials.projectId, project.id), eq(testimonials.status, 'published')))
+			.orderBy(asc(testimonials.sortOrder), asc(testimonials.id))
 	]);
 
-	return { ...project, services, outcomes, images };
+	return { ...project, services, outcomes, images, testimonials: quotes };
 }
 
 export async function otherProjects(currentId: number, limit = 2) {
@@ -214,6 +228,40 @@ export async function listTeam() {
 		links: links.filter((link) => link.memberId === member.id)
 	}));
 }
+
+/**
+ * The published testimonials, in the order the dashboard put them.
+ *
+ * No `published_at`: a quote is not scheduled, it is either shown or it is not,
+ * so `isLive` — which exists to keep a future-dated post hidden — has nothing
+ * to do here.
+ */
+const testimonialCard = {
+	id: testimonials.id,
+	quote: testimonials.quote,
+	quoteAm: testimonials.quoteAm,
+	authorName: testimonials.authorName,
+	authorNameAm: testimonials.authorNameAm,
+	authorRole: testimonials.authorRole,
+	authorRoleAm: testimonials.authorRoleAm,
+	company: testimonials.company,
+	companyAm: testimonials.companyAm,
+	logo: testimonials.logo,
+	logoAlt: testimonials.logoAlt,
+	logoAltAm: testimonials.logoAltAm
+};
+
+export async function listTestimonials(limit?: number) {
+	const query = db
+		.select(testimonialCard)
+		.from(testimonials)
+		.where(eq(testimonials.status, 'published'))
+		.orderBy(asc(testimonials.sortOrder), asc(testimonials.id));
+
+	return limit ? query.limit(limit) : query;
+}
+
+export type TestimonialCard = Awaited<ReturnType<typeof listTestimonials>>[number];
 
 export type TeamCard = Awaited<ReturnType<typeof listTeam>>[number];
 

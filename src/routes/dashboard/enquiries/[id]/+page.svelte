@@ -43,7 +43,7 @@
 	 */
 	const mailto = $derived.by(() => {
 		const topic = (topicLabels[enquiry.topic] ?? (() => enquiry.topic))();
-		const subject = `Re: ${topic} — Pulsedata Solutions`;
+		const subject = `Re: ${topic} · Pulsedata Solutions`;
 		const greeting = enquiry.locale === 'am' ? `ውድ ${enquiry.name}፣` : `Dear ${enquiry.name},`;
 		return `mailto:${enquiry.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(greeting + '\n\n')}`;
 	});

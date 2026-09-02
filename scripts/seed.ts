@@ -51,7 +51,7 @@ const articles = [
 
 ## The pattern
 
-A generic platform arrives with an opinion about how procurement works. The business has its own, developed over years for reasons that are usually good ones. Somewhere in the implementation, one of those two has to give, and it is almost never the software — so the business bends, staff quietly route around the parts that do not fit, and within a year the system holds a version of reality that is roughly true and never quite current.
+A generic platform arrives with an opinion about how procurement works. The business has its own, developed over years for reasons that are usually good ones. Somewhere in the implementation, one of those two has to give, and it is almost never the software, so the business bends, staff quietly route around the parts that do not fit, and within a year the system holds a version of reality that is roughly true and never quite current.
 
 The tell is when someone says "the system says X, but actually…". That sentence means the deployment has already failed; the only question left is how long it takes to admit it.
 
@@ -59,7 +59,7 @@ The tell is when someone says "the system says X, but actually…". That sentenc
 
 We configure the modules to the operation rather than the other way round, which is only possible because we wrote the modules. When a client's approval threshold does not match what the software expects, that is a change we can make, not a limitation we have to explain.
 
-That is also why the suite is modular. Taking the four modules you need now and adding production costing next year is a smaller, likelier-to-succeed project than replacing everything at once — and a business that has seen one module work will trust the second.
+That is also why the suite is modular. Taking the four modules you need now and adding production costing next year is a smaller, likelier-to-succeed project than replacing everything at once, and a business that has seen one module work will trust the second.
 
 ## The unglamorous part
 
@@ -68,7 +68,7 @@ The other half is training, and it is the half that gets cut when a budget tight
 
 ## ሥርዓተ ጥለቱ
 
-አጠቃላይ መድረክ ግዢ እንዴት እንደሚሠራ የራሱን አስተያየት ይዞ ይመጣል። ንግዱ ግን በዓመታት ውስጥ በአብዛኛው በበቂ ምክንያት ያዳበረው የራሱ አለው። በትግበራው ውስጥ ከሁለቱ አንዱ መተው አለበት፤ ሶፍትዌሩ ግን ፈጽሞ አይተውም — ስለዚህ ንግዱ ይታጠፋል፣ ሠራተኞች የማይመቻቸውን ክፍሎች በዝምታ ያልፋሉ፣ በአንድ ዓመት ውስጥም ሥርዓቱ በግምት እውነት የሆነ ግን ፈጽሞ ወቅታዊ ያልሆነ የእውነታ ቅጂ ይይዛል።
+አጠቃላይ መድረክ ግዢ እንዴት እንደሚሠራ የራሱን አስተያየት ይዞ ይመጣል። ንግዱ ግን በዓመታት ውስጥ በአብዛኛው በበቂ ምክንያት ያዳበረው የራሱ አለው። በትግበራው ውስጥ ከሁለቱ አንዱ መተው አለበት፤ ሶፍትዌሩ ግን ፈጽሞ አይተውም፦ ስለዚህ ንግዱ ይታጠፋል፣ ሠራተኞች የማይመቻቸውን ክፍሎች በዝምታ ያልፋሉ፣ በአንድ ዓመት ውስጥም ሥርዓቱ በግምት እውነት የሆነ ግን ፈጽሞ ወቅታዊ ያልሆነ የእውነታ ቅጂ ይይዛል።
 
 ምልክቱ አንድ ሰው "ሥርዓቱ X ይላል፣ ግን በእውነቱ…" ሲል ነው። ያ ዓረፍተ ነገር ዝርጋታው አስቀድሞ መክሸፉን ያሳያል፤ የቀረው ጥያቄ ለመቀበል ምን ያህል ጊዜ እንደሚወስድ ብቻ ነው።
 
@@ -76,7 +76,7 @@ The other half is training, and it is the half that gets cut when a budget tight
 
 ክፍሎቹን ወደ ሥራው እንጂ ሥራውን ወደ ክፍሎቹ አናስማማም፤ ይህም የሚቻለው ክፍሎቹን እኛው ስለጻፍናቸው ነው። የደንበኛው የፈቃድ ገደብ ሶፍትዌሩ ከሚጠብቀው ጋር ካልተመሳሰለ፣ ያ ልናብራራው የሚገባን ገደብ ሳይሆን ልናደርገው የምንችለው ለውጥ ነው።
 
-ጥቅሉ በክፍሎች የተዋቀረበትም ምክንያት ይኸው ነው። አሁን የሚያስፈልጉዎትን አራት ክፍሎች ወስዶ በሚቀጥለው ዓመት የምርት ወጪ ስሌትን መጨመር፣ ሁሉንም በአንድ ጊዜ ከመተካት የሚያንስና የመሳካት ዕድሉ የሚበልጥ ፕሮጀክት ነው — አንድ ክፍል ሲሠራ ያየ ንግድም ሁለተኛውን ያምናል።
+ጥቅሉ በክፍሎች የተዋቀረበትም ምክንያት ይኸው ነው። አሁን የሚያስፈልጉዎትን አራት ክፍሎች ወስዶ በሚቀጥለው ዓመት የምርት ወጪ ስሌትን መጨመር፣ ሁሉንም በአንድ ጊዜ ከመተካት የሚያንስና የመሳካት ዕድሉ የሚበልጥ ፕሮጀክት ነው፤ አንድ ክፍል ሲሠራ ያየ ንግድም ሁለተኛውን ያምናል።
 
 ## የማያምረው ክፍል
 
@@ -99,7 +99,7 @@ The other half is training, and it is the half that gets cut when a budget tight
 
 ## Where the weight comes from
 
-Very little of it is essential. Heavy systems are usually heavy because they are assembled from layers that each solve a general problem — a framework, an ORM, a plugin architecture, a reporting engine — and each layer carries the cost of every case it was built to handle, including the ones you will never hit.
+Very little of it is essential. Heavy systems are usually heavy because they are assembled from layers that each solve a general problem (a framework, an ORM, a plugin architecture, a reporting engine), and each layer carries the cost of every case it was built to handle, including the ones you will never hit.
 
 Writing the modules ourselves means we pay for the cases that exist. There is no plugin system holding open a door nobody walks through, and no abstraction layer between the query and the answer.
 
@@ -116,7 +116,7 @@ None of this makes hosting free. A SaaS deployment still runs on infrastructure 
 
 ## ክብደቱ ከየት ይመጣል
 
-በጣም ጥቂቱ ብቻ አስፈላጊ ነው። ከባድ ሥርዓቶች ከባድ የሚሆኑት በአብዛኛው እያንዳንዳቸው አጠቃላይ ችግርን ከሚፈቱ ንብርብሮች ስለሚሰበሰቡ ነው — ማዕቀፍ፣ ኦአርኤም፣ የተሰኪ አርክቴክቸር፣ የሪፖርት ሞተር — እያንዳንዱ ንብርብርም ለመያዝ የተገነባውን እያንዳንዱን ሁኔታ ወጪ ይሸከማል፤ ፈጽሞ የማይገጥሙዎትንም ጨምሮ።
+በጣም ጥቂቱ ብቻ አስፈላጊ ነው። ከባድ ሥርዓቶች ከባድ የሚሆኑት በአብዛኛው እያንዳንዳቸው አጠቃላይ ችግርን ከሚፈቱ ንብርብሮች ስለሚሰበሰቡ ነው (ማዕቀፍ፣ ኦአርኤም፣ የተሰኪ አርክቴክቸር፣ የሪፖርት ሞተር) እያንዳንዱ ንብርብርም ለመያዝ የተገነባውን እያንዳንዱን ሁኔታ ወጪ ይሸከማል፤ ፈጽሞ የማይገጥሙዎትንም ጨምሮ።
 
 ክፍሎቹን ራሳችን መጻፍ ማለት ላሉት ሁኔታዎች ብቻ እንከፍላለን ማለት ነው። ማንም የማያልፍበትን በር ከፍቶ የሚይዝ የተሰኪ ሥርዓት የለም፤ በጥያቄውና በመልሱ መካከልም የአብስትራክሽን ንብርብር የለም።
 
@@ -148,7 +148,7 @@ None of this makes hosting free. A SaaS deployment still runs on infrastructure 
 
 ## Reconciliation is a symptom
 
-If a monthly close involves reconciling, the business has more than one set of books, whatever the org chart says. Reconciliation is the work of making several records agree — and the reason it is necessary is that the same event was recorded more than once, by more than one person, using more than one definition.
+If a monthly close involves reconciling, the business has more than one set of books, whatever the org chart says. Reconciliation is the work of making several records agree, and the reason it is necessary is that the same event was recorded more than once, by more than one person, using more than one definition.
 
 Nothing about that is fixed by a better spreadsheet template or a stricter deadline. It is fixed by the event only being recorded once.
 
@@ -165,7 +165,7 @@ Honestly: discipline, at the start. Everyone has to record the event where it ha
 
 ## ማስታረቅ የበሽታ ምልክት ነው
 
-ወርሃዊ መዝጊያ ማስታረቅን የሚያካትት ከሆነ፣ የድርጅቱ መዋቅር ምንም ይበል ምን ንግዱ ከአንድ በላይ የመዝገብ ስብስብ አለው። ማስታረቅ በርካታ መዝገቦችን የማስማማት ሥራ ነው — አስፈላጊ የሚሆንበትም ምክንያት ተመሳሳዩ ክስተት ከአንድ ጊዜ በላይ፣ ከአንድ በላይ በሆኑ ሰዎች፣ ከአንድ በላይ በሆነ ትርጓሜ ስለተመዘገበ ነው።
+ወርሃዊ መዝጊያ ማስታረቅን የሚያካትት ከሆነ፣ የድርጅቱ መዋቅር ምንም ይበል ምን ንግዱ ከአንድ በላይ የመዝገብ ስብስብ አለው። ማስታረቅ በርካታ መዝገቦችን የማስማማት ሥራ ነው፦ አስፈላጊ የሚሆንበትም ምክንያት ተመሳሳዩ ክስተት ከአንድ ጊዜ በላይ፣ ከአንድ በላይ በሆኑ ሰዎች፣ ከአንድ በላይ በሆነ ትርጓሜ ስለተመዘገበ ነው።
 
 ከዚህ ውስጥ ምንም በተሻለ የሉህ አብነት ወይም በጠበቀ የጊዜ ገደብ አይስተካከልም። የሚስተካከለው ክስተቱ አንድ ጊዜ ብቻ ሲመዘገብ ነው።
 

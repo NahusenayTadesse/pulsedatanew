@@ -9,6 +9,7 @@
 		LogOut,
 		Mails,
 		Menu,
+		Quote,
 		Send,
 		Users
 	} from '@lucide/svelte';
@@ -29,6 +30,7 @@
 		{ href: '/dashboard/projects', label: m.dash_projects(), icon: Briefcase },
 		{ href: '/dashboard/blogs', label: m.dash_blogs(), icon: FileText },
 		{ href: '/dashboard/team', label: m.dash_team(), icon: Users },
+		{ href: '/dashboard/testimonials', label: m.dash_testimonials(), icon: Quote },
 		{
 			href: '/dashboard/enquiries',
 			label: m.dash_enquiries(),

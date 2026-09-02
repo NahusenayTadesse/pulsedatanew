@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 	import { Languages } from '@lucide/svelte';
 	import {
 		getLocale,
@@ -25,18 +24,23 @@
 	const hrefFor = (locale: Locale) =>
 		localizeHref(deLocalizeHref(page.url.pathname), { locale }) + page.url.search;
 
-	/**
-	 * A full navigation rather than a client-side one.
+	/*
+	 * Switching locale is a full document navigation — `data-sveltekit-reload`
+	 * on the links below, and no click handler at all.
 	 *
-	 * The document's `lang` and `dir` are set by the server via
-	 * `transformPageChunk`, so a client-side `goto` would move to the Amharic
-	 * URL while leaving `<html lang="en">` behind — which is what a screen
-	 * reader uses to choose a voice.
+	 * It has to be. The locale is resolved on the server: the middleware in
+	 * `hooks.server.ts` reads it from the URL and `transformPageChunk` writes it
+	 * into `<html lang>` and `dir`. Paraglide's message functions are plain
+	 * calls, not stores, so nothing in an already-rendered page re-runs when the
+	 * URL changes underneath it. A client-side `goto` therefore did exactly what
+	 * it was asked and nothing more: the address bar said `/am`, the page stayed
+	 * in English, and one reload later it was Amharic — which is precisely the
+	 * bug this replaced.
+	 *
+	 * The cost is a document request on a control almost nobody presses twice,
+	 * and the gain is that `lang` — what a screen reader uses to pick a voice —
+	 * can never disagree with the words on the page.
 	 */
-	function switchTo(locale: Locale) {
-		if (locale === current) return;
-		goto(hrefFor(locale), { invalidateAll: true });
-	}
 </script>
 
 <div
@@ -50,10 +54,7 @@
 			variant="ghost"
 			size="sm"
 			href={hrefFor(locale)}
-			onclick={(event: MouseEvent) => {
-				event.preventDefault();
-				switchTo(locale);
-			}}
+			data-sveltekit-reload
 			aria-current={locale === current ? 'true' : undefined}
 			class="h-6 rounded-full px-2.5 text-xs font-medium {locale === current
 				? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'

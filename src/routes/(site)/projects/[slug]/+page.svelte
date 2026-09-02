@@ -6,6 +6,7 @@
 	import { pick, isTranslated } from '$lib/i18n';
 	import ProjectCard from '$lib/components/site/ProjectCard.svelte';
 	import CtaBand from '$lib/components/site/CtaBand.svelte';
+	import TestimonialCard from '$lib/components/site/TestimonialCard.svelte';
 	import ScrollProgress from '$lib/components/site/ScrollProgress.svelte';
 	import CountUp from '$lib/components/site/CountUp.svelte';
 	import { reveal, stagger } from '$lib/actions/reveal';
@@ -144,6 +145,23 @@
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			<div class="prose">{@html body}</div>
 		</div>
+	{/if}
+
+	<!--
+		The client's own words, under the story and before the gallery: it is the
+		answer to the question the body has just raised — did it work — and it
+		carries more weight there than it would at the top, before anyone knows
+		what was built.
+	-->
+	{#if p.testimonials.length}
+		<section class="mx-auto max-w-6xl border-t px-5 py-16 sm:px-8" aria-labelledby="testimonial">
+			<h2 id="testimonial" class="eyebrow mb-8 text-brand-gold">{m.projects_testimonial()}</h2>
+			<div class="grid gap-6 {p.testimonials.length > 1 ? 'sm:grid-cols-2' : 'max-w-3xl'}">
+				{#each p.testimonials as testimonial, index (testimonial.id)}
+					<TestimonialCard {testimonial} delay={stagger(index, 110)} />
+				{/each}
+			</div>
+		</section>
 	{/if}
 
 	{#if p.images.length}

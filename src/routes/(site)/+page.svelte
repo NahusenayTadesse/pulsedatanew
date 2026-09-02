@@ -5,8 +5,10 @@
 	import Section from '$lib/components/site/Section.svelte';
 	import CtaBand from '$lib/components/site/CtaBand.svelte';
 	import RecordFlow from '$lib/components/site/RecordFlow.svelte';
+	import HeroField from '$lib/components/site/HeroField.svelte';
 	import ProjectCard from '$lib/components/site/ProjectCard.svelte';
 	import PostCard from '$lib/components/site/PostCard.svelte';
+	import TestimonialCard from '$lib/components/site/TestimonialCard.svelte';
 	import { reveal, stagger } from '$lib/actions/reveal';
 	import { OG_IMAGE } from '$lib/seo';
 	import JsonLd from '$lib/components/site/JsonLd.svelte';
@@ -120,9 +122,9 @@
 </script>
 
 <svelte:head>
-	<title>{m.site_name()} — {m.site_tagline()}</title>
+	<title>{m.site_name()} · {m.site_tagline()}</title>
 	<meta name="description" content={m.site_description()} />
-	<meta property="og:title" content="{m.site_name()} — {m.site_tagline()}" />
+	<meta property="og:title" content="{m.site_name()} · {m.site_tagline()}" />
 	<meta property="og:description" content={m.site_description()} />
 	<meta property="og:type" content="website" />
 	<meta property="og:image" content={OG_IMAGE} />
@@ -131,38 +133,80 @@
 <JsonLd data={organisation} />
 <JsonLd data={website} />
 
-<!-- Hero -->
-<section class="mx-auto max-w-6xl px-5 pt-16 pb-16 sm:px-8 sm:pt-24 sm:pb-20">
+<!--
+	Hero.
+
+	Full-bleed rather than on the 6xl measure, because the field behind it is the
+	point: a gradient that stops at the content's left gutter reads as a panel,
+	and this one has to read as the ground the page begins on. `isolate` gives it
+	a stacking context so the field's `z-index: -1` lands behind the copy and no
+	further down; `overflow-hidden` is what clips the orb and the arc to the band.
+
+	The copy is one column now. The diagram that used to sit under it has its own
+	section below — it is the argument, and it was being read as hero furniture.
+
+	It fills the screen: `100dvh` less the 4rem header, so the band ends exactly
+	where the viewport does rather than a header's height past it. `min-h` and not
+	`h`, because Amharic sets longer and a phone in landscape has no business
+	clipping the buttons — the section grows and the field grows with it. `dvh`
+	rather than `vh` so a mobile browser retracting its address bar does not leave
+	the seam floating above the fold.
+
+	On a phone it stops at 90dvh instead. A hero that is exactly the screen leaves
+	a reader no evidence that the page continues, and that costs more on a small
+	screen than the height is worth — at 90% the next section shows above the
+	fold and the scroll cue has something to point at.
+-->
+<section
+	class="relative isolate flex min-h-[calc(90dvh-4rem)] items-center overflow-hidden py-16 sm:min-h-[calc(100dvh-4rem)] sm:py-24"
+>
+	<HeroField />
+
 	<!--
 		The hero animates on load, not on scroll: it is already on screen, so there
 		is nothing to reveal. `--enter` staggers each part down the page. This is
 		the one orchestrated moment on the site; everything below it is a quieter
 		version of the same idea.
 	-->
-	<p class="eyebrow enter mb-6 text-brand-gold" style="--enter: 0">{m.home_hero_eyebrow()}</p>
+	<div class="mx-auto w-full max-w-6xl px-5 sm:px-8">
+		<p class="eyebrow enter mb-6 text-brand-gold" style="--enter: 0">{m.home_hero_eyebrow()}</p>
 
-	<div class="grid gap-8 lg:grid-cols-[1.15fr_1fr] lg:items-end">
-		<h1 class="display enter text-[clamp(2.5rem,7vw,4.5rem)]" style="--enter: 1">
+		<h1 class="display enter max-w-3xl text-[clamp(2.75rem,7.5vw,5rem)]" style="--enter: 1">
 			{m.home_hero_title()}
 		</h1>
-		<div class="enter space-y-4" style="--enter: 2">
-			<p class="text-lg leading-relaxed text-balance text-muted-foreground">
-				{m.home_hero_body()}
-			</p>
-			<div class="flex flex-wrap gap-3 pt-2">
-				<Button href={localizeHref('/contact')} size="lg">
-					{m.cta_book_demo()}
-					<ArrowRight class="size-4" aria-hidden="true" />
-				</Button>
-				<Button href={localizeHref('/about')} size="lg" variant="outline">
-					{m.nav_about()}
-				</Button>
-			</div>
-			<p class="pt-1 font-mono text-xs text-muted-foreground">{m.home_hero_note()}</p>
-		</div>
-	</div>
 
-	<div class="enter mt-14 sm:mt-20" style="--enter: 3">
+		<!-- Held to a narrower measure than the headline so the line breaks fall
+		     inside the field rather than running under the orb. -->
+		<p class="enter mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground" style="--enter: 2">
+			{m.home_hero_body()}
+		</p>
+
+		<div class="enter mt-8 flex flex-wrap gap-3" style="--enter: 3">
+			<Button href={localizeHref('/contact')} size="lg">
+				{m.cta_book_demo()}
+				<ArrowRight class="size-4" aria-hidden="true" />
+			</Button>
+			<Button href={localizeHref('/about')} size="lg" variant="outline">
+				{m.nav_about()}
+			</Button>
+		</div>
+
+		<p class="enter mt-6 font-mono text-xs text-muted-foreground" style="--enter: 4">
+			{m.home_hero_note()}
+		</p>
+	</div>
+</section>
+
+<!--
+	The record diagram, now a section of its own.
+
+	It carries its own eyebrow, heading and caption, so it takes no `Section`
+	wrapper — a second heading above it would say the same thing twice. It
+	reveals on scroll like everything else below the fold rather than entering on
+	load, because at this position it usually is below the fold.
+-->
+<section class="mx-auto max-w-6xl px-5 pt-16 pb-4 sm:px-8 sm:pt-20">
+	<div use:reveal>
 		<RecordFlow />
 	</div>
 </section>
@@ -261,6 +305,21 @@
 		<div class="grid gap-10 sm:grid-cols-2">
 			{#each data.projects as project, index (project.id)}
 				<ProjectCard {project} delay={stagger(index, 110)} />
+			{/each}
+		</div>
+	</Section>
+{/if}
+
+<!-- What clients say -->
+{#if data.testimonials.length}
+	<Section
+		eyebrow={m.home_testimonials_eyebrow()}
+		title={m.home_testimonials_title()}
+		lede={m.home_testimonials_body()}
+	>
+		<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+			{#each data.testimonials as testimonial, index (testimonial.id)}
+				<TestimonialCard {testimonial} delay={stagger(index, 110)} />
 			{/each}
 		</div>
 	</Section>

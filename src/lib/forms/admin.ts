@@ -44,7 +44,7 @@ const slug = z
 	.max(191)
 	.regex(
 		/^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-		'Use lower-case letters, numbers and hyphens — for example "erp-for-multi-branch".'
+		'Use lower-case letters, numbers and hyphens, for example "erp-for-multi-branch".'
 	);
 
 const status = z.enum(['draft', 'published']);
@@ -166,7 +166,7 @@ export function projectSchema() {
 				.string()
 				.trim()
 				.max(500)
-				.url('That is not a complete web address — include https://.')
+				.url('That is not a complete web address. Include https://.')
 				.optional()
 		),
 
@@ -248,7 +248,7 @@ export function teamSchema() {
 							message:
 								row.platform === 'email'
 									? 'That is not an email address.'
-									: 'That is not a complete web address — include https://.'
+									: 'That is not a complete web address. Include https://.'
 						});
 					}
 				});
@@ -258,7 +258,49 @@ export function teamSchema() {
 	});
 }
 
+/**
+ * A client's quote.
+ *
+ * Only the words and who said them are required. A company, a role and a logo
+ * are all things the person answering the phone may not have to hand, and a
+ * form that refuses to save without them is a form that never gets filled in.
+ */
+export function testimonialSchema() {
+	return z.object({
+		status,
+		sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
+
+		quote: z.string().trim().min(1, 'The quote is the whole point. Write it here.').max(1200),
+		quoteAm: optionalText(1200),
+
+		authorName: z.string().trim().min(1, 'Say who said it.').max(200),
+		authorNameAm: optionalText(200),
+		authorRole: optionalText(200),
+		authorRoleAm: optionalText(200),
+		company: optionalText(200),
+		companyAm: optionalText(200),
+
+		logo: optionalImage,
+		logoAlt: optionalText(255),
+		logoAltAm: optionalText(255),
+
+		/**
+		 * The case study this quote belongs to, or `""` for none.
+		 *
+		 * A string rather than an optional number, because that is what the select
+		 * posts and because `z.coerce.number()` turns the empty option into `0` —
+		 * a project id that does not exist, and a foreign key the driver rejects
+		 * with a message no field could carry. The action parses it and checks the
+		 * project is real.
+		 */
+		projectId: z.string().trim().max(20).default(''),
+
+		id: z.coerce.number().int().positive().optional()
+	});
+}
+
 export type TeamInput = z.infer<ReturnType<typeof teamSchema>>;
+export type TestimonialInput = z.infer<ReturnType<typeof testimonialSchema>>;
 
 export type PostInput = z.infer<ReturnType<typeof postSchema>>;
 export type ProjectInput = z.infer<ReturnType<typeof projectSchema>>;

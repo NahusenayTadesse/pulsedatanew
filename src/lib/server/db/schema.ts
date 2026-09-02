@@ -307,6 +307,76 @@ export const teamMemberLinks = mysqlTable(
 	(table) => [index('team_member_links_member_idx').on(table.memberId)]
 );
 
+/**
+ * What a client said about the work.
+ *
+ * A quote is not a case study and does not want to be one: it has no page, no
+ * slug and no body, so it lives in its own small table rather than as another
+ * nullable column on `projects`. Testimonials outlive the project they came
+ * from and several may come from one client, which a column could not hold.
+ *
+ * The logo is an upload, like every other image here — the company's own mark,
+ * shown beside the quote. It is optional: a quote with a name and a role is
+ * still worth printing, and a placeholder square where a logo should be is
+ * worse than no logo at all.
+ */
+export const testimonials = mysqlTable(
+	'testimonials',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+
+		/** The words themselves, without surrounding quotation marks — the page draws those. */
+		quote: text('quote').notNull(),
+		quoteAm: text('quote_am'),
+
+		/** Who said it. Required: an unattributed testimonial persuades nobody. */
+		authorName: varchar('author_name', { length: 200 }).notNull(),
+		authorNameAm: varchar('author_name_am', { length: 200 }),
+		authorRole: varchar('author_role', { length: 200 }),
+		authorRoleAm: varchar('author_role_am', { length: 200 }),
+
+		company: varchar('company', { length: 200 }),
+		companyAm: varchar('company_am', { length: 200 }),
+
+		/** A `/files/:name` filename, as every other upload is. */
+		logo: varchar('logo', { length: 255 }),
+		/**
+		 * Alt text for the logo.
+		 *
+		 * Nullable, and the page falls back to the company name — which is the
+		 * whole of what a logo's alt text should ever say.
+		 */
+		logoAlt: varchar('logo_alt', { length: 255 }),
+		logoAltAm: varchar('logo_alt_am', { length: 255 }),
+
+		/**
+		 * The case study this quote belongs to, when it belongs to one.
+		 *
+		 * `set null` rather than `cascade`: a client's words are still true after
+		 * the case study about them is withdrawn, and deleting a project should
+		 * not silently delete the testimonial the client gave permission for. The
+		 * quote simply stops appearing on a page that no longer exists and goes
+		 * on showing on the home page.
+		 */
+		projectId: int('project_id', { unsigned: true }).references(() => projects.id, {
+			onDelete: 'set null'
+		}),
+
+		status: mysqlEnum('status', publishStatus).notNull().default('draft'),
+		sortOrder: int('sort_order').notNull().default(0),
+
+		createdAt: timestamp('created_at').notNull().defaultNow(),
+		updatedAt: timestamp('updated_at')
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => new Date())
+	},
+	(table) => [
+		index('testimonials_status_sort_idx').on(table.status, table.sortOrder),
+		index('testimonials_project_idx').on(table.projectId)
+	]
+);
+
 // ---------------------------------------------------------------------------
 // Outbound mail
 // ---------------------------------------------------------------------------
@@ -546,6 +616,10 @@ export const projectImagesRelations = relations(projectImages, ({ one }) => ({
 	project: one(projects, { fields: [projectImages.projectId], references: [projects.id] })
 }));
 
+export const testimonialsRelations = relations(testimonials, ({ one }) => ({
+	project: one(projects, { fields: [testimonials.projectId], references: [projects.id] })
+}));
+
 export type Post = typeof posts.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type ProjectService = typeof projectServices.$inferSelect;
@@ -555,3 +629,4 @@ export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type SentEmail = typeof sentEmails.$inferSelect;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type TeamMemberLink = typeof teamMemberLinks.$inferSelect;
+export type Testimonial = typeof testimonials.$inferSelect;

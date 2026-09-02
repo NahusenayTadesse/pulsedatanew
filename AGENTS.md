@@ -126,6 +126,15 @@ Conventions worth knowing before editing:
   `/dashboard/team`. Portraits are all-or-nothing: the about page shows them
   only when every published member has one, decided once in
   `about/+page.server.ts`. Do not make that per-card.
+- **Testimonials are data.** A `testimonials` row is a quote, who said it and
+  the client's logo, edited at `/dashboard/testimonials` and shown on the home
+  page. No slug, no page and no `published_at` — a quote is either shown or it
+  is not — so `isLive` does not apply to it and neither does the sitemap. The
+  logo is optional and drawn `object-contain`: cropping a wordmark to a square
+  is how a client's mark ends up unreadable. A quote may name a `project_id`,
+  which puts it on that case study as well; the reference is `set null`, not
+  `cascade` — a client's words are still true after the case study about them
+  is withdrawn, and permission was given for the quote, not for the page.
 - **`Repeater` takes `isBlank`** when a row has a pre-set field. The default
   "every field empty" test never fires on a row that starts on a chosen social
   platform, and the trailing-blank-row effect then appends for ever.

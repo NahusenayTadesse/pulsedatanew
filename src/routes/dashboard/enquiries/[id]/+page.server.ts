@@ -34,7 +34,7 @@ function defaultSubject(topic: string, locale: string) {
 		{},
 		{ locale: locale === 'am' ? 'am' : 'en' }
 	);
-	return `Re: ${label} — Pulsedata Solutions`;
+	return `Re: ${label} · Pulsedata Solutions`;
 }
 
 export const load: PageServerLoad = async ({ params }) => {

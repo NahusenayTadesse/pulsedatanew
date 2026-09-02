@@ -171,19 +171,19 @@ Every one of those facts used to live in a spreadsheet, and every one of them wa
 
 ## What the system does
 
-**People.** A full employee register — identity documents, guarantors, family, work history, education, position, department and site — with the whole lifecycle from hire to termination. Attendance is recorded per site and per period.
+**People.** A full employee register: identity documents, guarantors, family, work history, education, position, department and site, with the whole lifecycle from hire to termination. Attendance is recorded per site and per period.
 
-**Leave that actually reconciles.** Annual leave is *accrued*, not typed in. Each employee earns a grant on their employment anniversary, sized by a service-length bracket, and each grant carries its own expiry. Days are always spent oldest-grant-first, so the days closest to expiring are used before newer ones. The balance ledger settles every change as the difference between what a leave cost before and what it costs after — which is what stops an already-approved leave from being charged twice when somebody edits its dates.
+**Leave that actually reconciles.** Annual leave is *accrued*, not typed in. Each employee earns a grant on their employment anniversary, sized by a service-length bracket, and each grant carries its own expiry. Days are always spent oldest-grant-first, so the days closest to expiring are used before newer ones. The balance ledger settles every change as the difference between what a leave cost before and what it costs after, which is what stops an already-approved leave from being charged twice when somebody edits its dates.
 
 **Payroll on the Ethiopian calendar.** Salary runs per month and per site, with overtime types, deduction types, pension classes, income tax bands and VAT/withholding rules all configurable rather than coded. Payslips, bank transfer lists and receipts come out the other end.
 
 **Money.** A signed bank ledger: every movement is tied to the transaction that caused it, positive in and negative out, and the account's running balance moves by exactly that amount inside the same database transaction. The history of a transaction always sums to what the balance says.
 
-**Clients and sites.** Customers, the sites they contract for, the contracts themselves, monthly payments, penalties, discounts, commission and renewals — with payment requests and a full payment history per contract.
+**Clients and sites.** Customers, the sites they contract for, the contracts themselves, monthly payments, penalties, discounts, commission and renewals, with payment requests and a full payment history per contract.
 
-**Supplies as assets, not stock.** The company owns its supplies whether they sit in the store or at a client site, so a lease is a location change, not a sale. The system tracks four figures — on hand, reserved, leased out and total owned — and moves a lease through pending → approved → issued → partially returned → returned → closed, writing the movement rows, the running total and the event log together in one transaction.
+**Supplies as assets, not stock.** The company owns its supplies whether they sit in the store or at a client site, so a lease is a location change, not a sale. The system tracks four figures (on hand, reserved, leased out and total owned) and moves a lease through pending → approved → issued → partially returned → returned → closed, writing the movement rows, the running total and the event log together in one transaction.
 
-**Approval on everything.** A maker-checker queue covers every entity that carries approval fields, from a new employee to a payment request. One registry, one queue, one set of actions — the entity is data, and a single route serves all of them.
+**Approval on everything.** A maker-checker queue covers every entity that carries approval fields, from a new employee to a payment request. One registry, one queue, one set of actions: the entity is data, and a single route serves all of them.
 
 **Permissions.** Role-based, with per-user overrides. A super admin is not a flag but a derivation: someone holding every permission that exists. Add a new permission to the system and anyone who does not also receive it stops being a super admin automatically.
 
@@ -198,17 +198,17 @@ Nothing here is novel on its own. What makes it work is that the same event is r
 
 ## ሥርዓቱ ምን ያደርጋል
 
-**ሰዎች።** ሙሉ የሠራተኛ መዝገብ — የመታወቂያ ሰነዶች፣ ዋስ፣ ቤተሰብ፣ የሥራ ልምድ፣ የትምህርት ደረጃ፣ የሥራ መደብ፣ ክፍልና ሳይት — ከቅጥር እስከ ስንብት ያለውን ሙሉ ሂደት ጨምሮ። መገኘት በሳይትና በጊዜ ክፍለ ጊዜ ይመዘገባል።
+**ሰዎች።** ሙሉ የሠራተኛ መዝገብ (የመታወቂያ ሰነዶች፣ ዋስ፣ ቤተሰብ፣ የሥራ ልምድ፣ የትምህርት ደረጃ፣ የሥራ መደብ፣ ክፍልና ሳይት) ከቅጥር እስከ ስንብት ያለውን ሙሉ ሂደት ጨምሮ። መገኘት በሳይትና በጊዜ ክፍለ ጊዜ ይመዘገባል።
 
-**በእውነት የሚስተካከል ዕረፍት።** ዓመታዊ ዕረፍት የሚተየብ ሳይሆን *የሚጠራቀም* ነው። እያንዳንዱ ሠራተኛ በቅጥር ዓመቱ በዓል ላይ በአገልግሎት ዘመን ደረጃ የሚወሰን ድርሻ ያገኛል፤ እያንዳንዱ ድርሻም የራሱ የማብቂያ ቀን አለው። ቀናት ሁልጊዜ ከቀድሞው ድርሻ ጀምሮ ይወጣሉ፤ ስለዚህ ለማለቅ የቀረቡት ቀናት ከአዲሶቹ በፊት ይጠቀማሉ። የሒሳብ መዝገቡ እያንዳንዱን ለውጥ ዕረፍቱ ከዚህ በፊት ያስከፈለውና አሁን የሚያስከፍለው ልዩነት አድርጎ ይመዘግባል — ይህም አንድ የጸደቀ ዕረፍት ቀኑ ሲስተካከል ሁለት ጊዜ እንዳይቆጠር የሚያደርገው ነው።
+**በእውነት የሚስተካከል ዕረፍት።** ዓመታዊ ዕረፍት የሚተየብ ሳይሆን *የሚጠራቀም* ነው። እያንዳንዱ ሠራተኛ በቅጥር ዓመቱ በዓል ላይ በአገልግሎት ዘመን ደረጃ የሚወሰን ድርሻ ያገኛል፤ እያንዳንዱ ድርሻም የራሱ የማብቂያ ቀን አለው። ቀናት ሁልጊዜ ከቀድሞው ድርሻ ጀምሮ ይወጣሉ፤ ስለዚህ ለማለቅ የቀረቡት ቀናት ከአዲሶቹ በፊት ይጠቀማሉ። የሒሳብ መዝገቡ እያንዳንዱን ለውጥ ዕረፍቱ ከዚህ በፊት ያስከፈለውና አሁን የሚያስከፍለው ልዩነት አድርጎ ይመዘግባል፤ ይህም አንድ የጸደቀ ዕረፍት ቀኑ ሲስተካከል ሁለት ጊዜ እንዳይቆጠር የሚያደርገው ነው።
 
 **በኢትዮጵያ ዘመን አቆጣጠር የሚሠራ ደመወዝ።** ደመወዝ በወርና በሳይት ይሠራል፤ የትርፍ ሰዓት ዓይነቶች፣ የተቀናሽ ዓይነቶች፣ የጡረታ ደረጃዎች፣ የገቢ ግብር ደረጃዎችና የተጨማሪ እሴት ታክስ ደንቦች በሙሉ በኮድ ሳይሆን በማዋቀር ይስተካከላሉ። የደመወዝ ወረቀት፣ የባንክ ዝውውር ዝርዝርና ደረሰኞች ከዚያ ይወጣሉ።
 
 **ገንዘብ።** ምልክት ያለው የባንክ መዝገብ፦ እያንዳንዱ እንቅስቃሴ ካስከተለው ግብይት ጋር የተሳሰረ ነው፤ ገቢ አዎንታዊ ወጪ አሉታዊ፤ የሒሳቡ ቀሪም በዚያው የመረጃ ቋት ግብይት ውስጥ በትክክል በዚያ መጠን ይንቀሳቀሳል።
 
-**ደንበኞችና ሳይቶች።** ደንበኞች፣ የሚዋዋሉባቸው ሳይቶች፣ ውሎቹ ራሳቸው፣ ወርሃዊ ክፍያዎች፣ ቅጣቶች፣ ቅናሾች፣ ኮሚሽንና ዕድሳቶች — ከክፍያ ጥያቄዎችና ከሙሉ የክፍያ ታሪክ ጋር።
+**ደንበኞችና ሳይቶች።** ደንበኞች፣ የሚዋዋሉባቸው ሳይቶች፣ ውሎቹ ራሳቸው፣ ወርሃዊ ክፍያዎች፣ ቅጣቶች፣ ቅናሾች፣ ኮሚሽንና ዕድሳቶች፤ ከክፍያ ጥያቄዎችና ከሙሉ የክፍያ ታሪክ ጋር።
 
-**ቁሳቁስ እንደ ንብረት እንጂ እንደ ሸቀጥ አይደለም።** ኩባንያው ቁሳቁሱን በመጋዘንም ይሁን በደንበኛ ሳይት ላይ ባለቤቱ ነው፤ ስለዚህ ኪራይ ሽያጭ ሳይሆን የቦታ ለውጥ ነው። ሥርዓቱ አራት ቁጥሮችን ይከታተላል — በእጅ ያለ፣ የተያዘ፣ የተከራየና ጠቅላላ ባለቤትነት።
+**ቁሳቁስ እንደ ንብረት እንጂ እንደ ሸቀጥ አይደለም።** ኩባንያው ቁሳቁሱን በመጋዘንም ይሁን በደንበኛ ሳይት ላይ ባለቤቱ ነው፤ ስለዚህ ኪራይ ሽያጭ ሳይሆን የቦታ ለውጥ ነው። ሥርዓቱ አራት ቁጥሮችን ይከታተላል፦ በእጅ ያለ፣ የተያዘ፣ የተከራየና ጠቅላላ ባለቤትነት።
 
 **በሁሉም ላይ ማጽደቅ።** የማጽደቅ መስኮች ያሏቸውን ሁሉንም ነገሮች የሚሸፍን የሁለት ደረጃ ወረፋ፤ ከአዲስ ሠራተኛ እስከ ክፍያ ጥያቄ። አንድ መዝገብ፣ አንድ ወረፋ፣ አንድ የድርጊት ስብስብ።
 
@@ -262,8 +262,8 @@ Nothing here is novel on its own. What makes it work is that the same event is r
 				alt: 'Supplies inventory with stock levels',
 				altAm: 'የክምችት መጠን ያለው የቁሳቁስ ዝርዝር',
 				caption:
-					'Supplies are tracked as owned assets — on hand, reserved, leased out and total owned are four different numbers.',
-				captionAm: 'ቁሳቁሶች እንደ ንብረት ይከታተላሉ — በእጅ ያለ፣ የተያዘ፣ የተከራየና ጠቅላላ ባለቤትነት አራት የተለያዩ ቁጥሮች ናቸው።'
+					'Supplies are tracked as owned assets: on hand, reserved, leased out and total owned are four different numbers.',
+				captionAm: 'ቁሳቁሶች እንደ ንብረት ይከታተላሉ፦ በእጅ ያለ፣ የተያዘ፣ የተከራየና ጠቅላላ ባለቤትነት አራት የተለያዩ ቁጥሮች ናቸው።'
 			},
 			{
 				image: shot('spotless-enterprise-erp', 'leases'),
@@ -317,9 +317,9 @@ Nothing here is novel on its own. What makes it work is that the same event is r
 		client: 'Shimeles Abera Foundation',
 		clientAm: 'ሽመልስ አበራ ፋውንዴሽን',
 		summary:
-			'A nonprofit operations system where the public website is one view of the data and the dashboard is where the data lives — built so that nothing a programme manager might want to change next year requires a developer.',
+			'A nonprofit operations system where the public website is one view of the data and the dashboard is where the data lives, built so that nothing a programme manager might want to change next year requires a developer.',
 		summaryAm:
-			'የሕዝብ ድረ-ገጹ የመረጃው አንድ መስኮት ብቻ የሆነበት፣ መረጃው ራሱ በዳሽቦርዱ ውስጥ የሚኖርበት የበጎ አድራጎት ሥራ ማስኬጃ ሥርዓት — የፕሮግራም ሥራ አስኪያጅ በሚቀጥለው ዓመት ሊለውጠው የሚፈልገው ነገር ሁሉ ገንቢ እንዳያስፈልገው ተደርጎ የተሠራ።',
+			'የሕዝብ ድረ-ገጹ የመረጃው አንድ መስኮት ብቻ የሆነበት፣ መረጃው ራሱ በዳሽቦርዱ ውስጥ የሚኖርበት የበጎ አድራጎት ሥራ ማስኬጃ ሥርዓት፤ የፕሮግራም ሥራ አስኪያጅ በሚቀጥለው ዓመት ሊለውጠው የሚፈልገው ነገር ሁሉ ገንቢ እንዳያስፈልገው ተደርጎ የተሠራ።',
 		industry: 'Nonprofit & social programmes',
 		industryAm: 'በጎ አድራጎትና ማኅበራዊ ፕሮግራሞች',
 		year: '2025',
@@ -340,25 +340,25 @@ The test applied to every screen: *if the programme manager wants to change this
 
 ## What the Foundation actually does
 
-It walks with families in Addis Ababa through medical crisis, old age, mental strain and the long work of getting a child through school. That means intake, assessment, casework and disbursement — and a public face that has to ask strangers for money and for time.
+It walks with families in Addis Ababa through medical crisis, old age, mental strain and the long work of getting a child through school. That means intake, assessment, casework and disbursement, and a public face that has to ask strangers for money and for time.
 
 ## The system
 
 **A dynamic form engine.** Applications for assistance are not hand-written pages. A form is a row in \`form_definitions\` with its questions in \`form_fields\`, and one renderer draws it, validates it and files the submission. Adding a new intake form is configuration.
 
-**Beneficiary casework.** Households, beneficiaries, assessed needs by category, case notes, documents and disbursements — with payment methods and accounts behind them.
+**Beneficiary casework.** Households, beneficiaries, assessed needs by category, case notes, documents and disbursements, with payment methods and accounts behind them.
 
 **Donations.** Campaigns, donors, one-off gifts, recurring pledges, in-kind donations with itemised contents and photographs, and a reconciliation log against the external giving platforms.
 
-**Volunteering, with a safeguarding gate.** This one is deliberately *not* form-builder driven. Volunteering ends in someone being placed with vulnerable people, so the questions the gate depends on are code rather than editable rows — a coordinator deleting the references section would be disabling a control, not editing copy. A volunteer cannot reach an approved stage while the safeguarding checklist is incomplete, and that check lives in the single transition function every path goes through, precisely so a direct POST cannot skip it.
+**Volunteering, with a safeguarding gate.** This one is deliberately *not* form-builder driven. Volunteering ends in someone being placed with vulnerable people, so the questions the gate depends on are code rather than editable rows: a coordinator deleting the references section would be disabling a control, not editing copy. A volunteer cannot reach an approved stage while the safeguarding checklist is incomplete, and that check lives in the single transition function every path goes through, precisely so a direct POST cannot skip it.
 
-**Pillar-scoped access.** A caseworker assigned to one programme pillar must not reach another pillar's case notes or documents — not through the interface, not by changing a URL, not by posting directly. The scope is folded into the query rather than hidden in the UI.
+**Pillar-scoped access.** A caseworker assigned to one programme pillar must not reach another pillar's case notes or documents: not through the interface, not by changing a URL, not by posting directly. The scope is folded into the query rather than hidden in the UI.
 
 **The rest.** Blog, media library, testimonials, contact routing by subject and office, newsletter, an audit log over everything, and a cached impact-metrics layer for the public figures.
 
 ## Why it matters
 
-Most nonprofit websites are built once and then slowly become wrong, because every change costs a developer the organisation cannot afford. This one was built so the Foundation owns its own content, its own forms and its own workflow — and the developer is only needed when the *shape* of the work changes, not its wording.`,
+Most nonprofit websites are built once and then slowly become wrong, because every change costs a developer the organisation cannot afford. This one was built so the Foundation owns its own content, its own forms and its own workflow, and the developer is only needed when the *shape* of the work changes, not its wording.`,
 		bodyAm: `## መሪው ደንብ
 
 በዚህ ግንባታ ውስጥ እያንዳንዱን ውሳኔ የቀረጸ አንድ ደንብ አለ፦
@@ -371,19 +371,19 @@ Most nonprofit websites are built once and then slowly become wrong, because eve
 
 ## ፋውንዴሽኑ በእውነት ምን ይሠራል
 
-በአዲስ አበባ ውስጥ ካሉ ቤተሰቦች ጋር በሕክምና ቀውስ፣ በእርጅና፣ በአእምሮ ጫናና ልጅን በትምህርት የማሳለፍ ረጅም ሥራ ውስጥ አብሮ ይራመዳል። ይህም መቀበልን፣ ግምገማን፣ የጉዳይ ሥራንና ክፍያን ያካትታል — እንዲሁም ከማያውቋቸው ሰዎች ገንዘብና ጊዜ መጠየቅ ያለበት የሕዝብ ገጽታን።
+በአዲስ አበባ ውስጥ ካሉ ቤተሰቦች ጋር በሕክምና ቀውስ፣ በእርጅና፣ በአእምሮ ጫናና ልጅን በትምህርት የማሳለፍ ረጅም ሥራ ውስጥ አብሮ ይራመዳል። ይህም መቀበልን፣ ግምገማን፣ የጉዳይ ሥራንና ክፍያን ያካትታል፤ እንዲሁም ከማያውቋቸው ሰዎች ገንዘብና ጊዜ መጠየቅ ያለበት የሕዝብ ገጽታን።
 
 ## ሥርዓቱ
 
 **ተለዋዋጭ የቅጽ ሞተር።** የእርዳታ ማመልከቻዎች በእጅ የተጻፉ ገጾች አይደሉም። አንድ ቅጽ በ\`form_definitions\` ውስጥ ያለ ረድፍ ሲሆን ጥያቄዎቹ በ\`form_fields\` ውስጥ ናቸው፤ አንድ አሳሽ ይስለዋል፣ ያረጋግጠዋል፣ ማመልከቻውንም ይመዘግባል። አዲስ የመቀበያ ቅጽ መጨመር ማዋቀር ነው።
 
-**የተጠቃሚ ጉዳይ አያያዝ።** ቤተሰቦች፣ ተጠቃሚዎች፣ በምድብ የተገመገሙ ፍላጎቶች፣ የጉዳይ ማስታወሻዎች፣ ሰነዶችና ክፍያዎች — ከክፍያ ዘዴዎችና ሒሳቦች ጋር።
+**የተጠቃሚ ጉዳይ አያያዝ።** ቤተሰቦች፣ ተጠቃሚዎች፣ በምድብ የተገመገሙ ፍላጎቶች፣ የጉዳይ ማስታወሻዎች፣ ሰነዶችና ክፍያዎች፦ ከክፍያ ዘዴዎችና ሒሳቦች ጋር።
 
 **ልገሳ።** ዘመቻዎች፣ ለጋሾች፣ አንድ ጊዜ ስጦታዎች፣ ተደጋጋሚ ቃል ኪዳኖች፣ በዝርዝርና በፎቶ የተያዙ የዓይነት ልገሳዎች፣ እና ከውጫዊ የመስጫ መድረኮች ጋር የሚስተካከል መዝገብ።
 
 **በጎ ፈቃደኝነት፣ ከጥበቃ በር ጋር።** ይህኛው ሆን ተብሎ በቅጽ ገንቢው *አይመራም*። በጎ ፈቃደኝነት አንድ ሰው ተጋላጭ ከሆኑ ሰዎች ጋር በመመደብ ስለሚያልቅ፣ በሩ የሚመሠረትባቸው ጥያቄዎች ሊስተካከሉ የሚችሉ ረድፎች ሳይሆኑ ኮድ ናቸው። የጥበቃ ዝርዝሩ ሳይሟላ በጎ ፈቃደኛ ወደ ጸደቀ ደረጃ መድረስ አይችልም።
 
-**በዓምድ የተገደበ ተደራሽነት።** ለአንድ የፕሮግራም ዓምድ የተመደበ የጉዳይ ሠራተኛ የሌላውን ዓምድ ማስታወሻዎችና ሰነዶች ማግኘት የለበትም — በበይነገጽም ይሁን አድራሻ በመቀየር ወይም በቀጥታ በመላክ። ገደቡ በተጠቃሚ በይነገጽ ውስጥ ተደብቆ ሳይሆን በጥያቄው ውስጥ ተጣብቆ ነው።
+**በዓምድ የተገደበ ተደራሽነት።** ለአንድ የፕሮግራም ዓምድ የተመደበ የጉዳይ ሠራተኛ የሌላውን ዓምድ ማስታወሻዎችና ሰነዶች ማግኘት የለበትም፤ በበይነገጽም ይሁን አድራሻ በመቀየር ወይም በቀጥታ በመላክ። ገደቡ በተጠቃሚ በይነገጽ ውስጥ ተደብቆ ሳይሆን በጥያቄው ውስጥ ተጣብቆ ነው።
 
 **የቀረው።** ብሎግ፣ የሚዲያ ቤተ-መጻሕፍት፣ ምስክርነቶች፣ በርዕስና በቢሮ የሚመራ የመገናኛ መስመር፣ ጋዜጣ፣ በሁሉም ላይ የኦዲት መዝገብ፣ እና ለሕዝብ አኃዞች የተከማቸ የተጽዕኖ መለኪያ ንብርብር።
 
@@ -437,8 +437,8 @@ Most nonprofit websites are built once and then slowly become wrong, because eve
 				alt: 'The volunteer application with skills and availability',
 				altAm: 'ከክህሎትና ከጊዜ ተገኝነት ጋር የበጎ ፈቃደኛ ማመልከቻ',
 				caption:
-					'The one form deliberately written in code — because a safeguarding gate depends on its questions.',
-				captionAm: 'ሆን ተብሎ በኮድ የተጻፈው ብቸኛው ቅጽ — የጥበቃ በሩ በጥያቄዎቹ ላይ ስለሚመሠረት።'
+					'The one form deliberately written in code, because a safeguarding gate depends on its questions.',
+				captionAm: 'ሆን ተብሎ በኮድ የተጻፈው ብቸኛው ቅጽ፤ የጥበቃ በሩ በጥያቄዎቹ ላይ ስለሚመሠረት።'
 			},
 			{
 				image: shot('shimeles-abera-foundation', 'donate'),
@@ -453,8 +453,8 @@ Most nonprofit websites are built once and then slowly become wrong, because eve
 				alt: 'The about page describing the Foundation’s programme pillars',
 				altAm: 'የፋውንዴሽኑን የፕሮግራም ዓምዶች የሚገልጽ የስለእኛ ገጽ',
 				caption:
-					'Programme pillars — names, descriptions, icons and colours — are rows, so a new programme is not a deploy.',
-				captionAm: 'የፕሮግራም ዓምዶች — ስሞች፣ መግለጫዎች፣ አዶዎችና ቀለሞች — ረድፎች ናቸው፤ ስለዚህ አዲስ ፕሮግራም ማሰማራት አይጠይቅም።'
+					'Programme pillars (names, descriptions, icons and colours) are rows, so a new programme is not a deploy.',
+				captionAm: 'የፕሮግራም ዓምዶች (ስሞች፣ መግለጫዎች፣ አዶዎችና ቀለሞች) ረድፎች ናቸው፤ ስለዚህ አዲስ ፕሮግራም ማሰማራት አይጠይቅም።'
 			},
 			{
 				image: shot('shimeles-abera-foundation', 'blog'),
@@ -468,8 +468,8 @@ Most nonprofit websites are built once and then slowly become wrong, because eve
 				alt: 'The contact page with offices and subjects',
 				altAm: 'ከቢሮዎችና ከርዕሶች ጋር የመገናኛ ገጽ',
 				caption:
-					'Messages route by subject to the right office — and the subjects and offices are both editable.',
-				captionAm: 'መልእክቶች በርዕስ ወደ ትክክለኛው ቢሮ ይመራሉ — ርዕሶቹና ቢሮዎቹም ሁለቱም ሊስተካከሉ ይችላሉ።'
+					'Messages route by subject to the right office, and the subjects and offices are both editable.',
+				captionAm: 'መልእክቶች በርዕስ ወደ ትክክለኛው ቢሮ ይመራሉ፤ ርዕሶቹና ቢሮዎቹም ሁለቱም ሊስተካከሉ ይችላሉ።'
 			}
 		]
 	},
@@ -497,7 +497,7 @@ Most nonprofit websites are built once and then slowly become wrong, because eve
 
 Spotless is the client behind our largest ERP deployment. This is the other half of that engagement: the public site.
 
-They are deliberately different pieces of work. The ERP is where the company's staff, contracts, payroll and supplies live — nobody outside the business ever sees it. This site has one job, and it is a sales job: convince a procurement officer at a bank, an embassy or an NGO that a facility services contract is safe in this company's hands.
+They are deliberately different pieces of work. The ERP is where the company's staff, contracts, payroll and supplies live: nobody outside the business ever sees it. This site has one job, and it is a sales job: convince a procurement officer at a bank, an embassy or an NGO that a facility services contract is safe in this company's hands.
 
 ## What a facility services buyer is actually checking
 
@@ -505,27 +505,27 @@ Not the design. They are checking whether the company is real, how long it has b
 
 So the site leads with the things that answer those questions:
 
-- **The figures**, animated into view rather than buried in prose — 62+ clients, 300+ current employees, 15+ years. For a contract that depends on staffing a site reliably, headcount *is* the pitch.
+- **The figures**, animated into view rather than buried in prose: 62+ clients, 300+ current employees, 15+ years. For a contract that depends on staffing a site reliably, headcount *is* the pitch.
 - **Four service lines**, each given its own section rather than compressed into a paragraph: site cleaning, security personnel, training and consultancy, and property management with materials supply.
-- **The client list by type** — corporations, NGOs and embassies. In this market, who already trusts you is the strongest thing you can say.
+- **The client list by type**: corporations, NGOs and embassies. In this market, who already trusts you is the strongest thing you can say.
 - **Named leadership and team**, with roles and responsibilities. A buyer signing a multi-site contract wants to know who is accountable.
 
 ## The structure
 
 Seven pages, each with a job: home, about, services, news, testimonials, FAQ and contact.
 
-The **FAQ** is the section most facility services sites skip and the one that does the most work here. It is grouped — general company questions, then service-related ones — and it answers the awkward, practical things a buyer would otherwise have to phone about: whether small and large contracts are both handled, whether packages can be tailored, how multi-site work is scaled and managed.
+The **FAQ** is the section most facility services sites skip and the one that does the most work here. It is grouped (general company questions, then service-related ones), and it answers the awkward, practical things a buyer would otherwise have to phone about: whether small and large contracts are both handled, whether packages can be tailored, how multi-site work is scaled and managed.
 
 **News** and **testimonials** exist because a services company's credibility decays if its site looks abandoned. Both are content the company keeps current.
 
 ## Why it looks the way it does
 
-A corporate blue over photography of the Addis skyline, a serif wordmark, and a lot of air. That is a deliberate distance from the ERP's dense operational interface — the same client, two audiences, and no reason the software their staff use all day should look like the page a buyer sees once before signing.`,
+A corporate blue over photography of the Addis skyline, a serif wordmark, and a lot of air. That is a deliberate distance from the ERP's dense operational interface: the same client, two audiences, and no reason the software their staff use all day should look like the page a buyer sees once before signing.`,
 		bodyAm: `## ለአንድ ኩባንያ ሁለት ሥርዓቶች
 
 ስፖትለስ ከትልቁ የኢአርፒ ማሰማራታችን ጀርባ ያለው ደንበኛ ነው። ይህ ደግሞ የዚያ ተሳትፎ ሌላኛው ግማሽ ነው፦ የሕዝብ ገጹ።
 
-ሆን ተብለው የተለያዩ ሥራዎች ናቸው። ኢአርፒው የኩባንያው ሠራተኞች፣ ውሎች፣ ደመወዝና ቁሳቁስ የሚኖሩበት ነው — ከንግዱ ውጪ ያለ ማንም አያየውም። ይህ ገጽ ግን አንድ ሥራ አለው፤ የሽያጭ ሥራም ነው፦ በባንክ፣ በኤምባሲ ወይም በመንግሥታዊ ያልሆነ ድርጅት ውስጥ ያለ የግዥ ኃላፊን የተቋም አገልግሎት ውል በዚህ ኩባንያ እጅ ደኅንነቱ የተጠበቀ መሆኑን ማሳመን።
+ሆን ተብለው የተለያዩ ሥራዎች ናቸው። ኢአርፒው የኩባንያው ሠራተኞች፣ ውሎች፣ ደመወዝና ቁሳቁስ የሚኖሩበት ነው፦ ከንግዱ ውጪ ያለ ማንም አያየውም። ይህ ገጽ ግን አንድ ሥራ አለው፤ የሽያጭ ሥራም ነው፦ በባንክ፣ በኤምባሲ ወይም በመንግሥታዊ ያልሆነ ድርጅት ውስጥ ያለ የግዥ ኃላፊን የተቋም አገልግሎት ውል በዚህ ኩባንያ እጅ ደኅንነቱ የተጠበቀ መሆኑን ማሳመን።
 
 ## የተቋም አገልግሎት ገዢ በእውነት ምን ይመረምራል
 
@@ -533,22 +533,22 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 
 ስለዚህ ገጹ እነዚያን ጥያቄዎች የሚመልሱ ነገሮችን በቅድሚያ ያቀርባል፦
 
-- **አኃዞቹ**፣ በጽሑፍ ውስጥ ከመቀበር ይልቅ በእንቅስቃሴ የሚታዩ — ከ62 በላይ ደንበኞች፣ ከ300 በላይ ሠራተኞች፣ ከ15 በላይ ዓመታት። ሳይትን በአስተማማኝ ሁኔታ በሰው ኃይል በመሙላት ላይ ለሚመሠረት ውል የሠራተኛ ብዛት ራሱ መከራከሪያው ነው።
+- **አኃዞቹ**፣ በጽሑፍ ውስጥ ከመቀበር ይልቅ በእንቅስቃሴ የሚታዩ፦ ከ62 በላይ ደንበኞች፣ ከ300 በላይ ሠራተኞች፣ ከ15 በላይ ዓመታት። ሳይትን በአስተማማኝ ሁኔታ በሰው ኃይል በመሙላት ላይ ለሚመሠረት ውል የሠራተኛ ብዛት ራሱ መከራከሪያው ነው።
 - **አራት የአገልግሎት መስመሮች**፣ እያንዳንዱ ወደ አንድ አንቀጽ ከመጨመቅ ይልቅ የራሱ ክፍል የተሰጠው፦ የሳይት ጽዳት፣ የጥበቃ ሰው ኃይል፣ ሥልጠናና ማማከር፣ እና ከቁሳቁስ አቅርቦት ጋር የንብረት አስተዳደር።
-- **የደንበኞች ዝርዝር በዓይነት** — ድርጅቶች፣ መንግሥታዊ ያልሆኑ ድርጅቶችና ኤምባሲዎች። በዚህ ገበያ ውስጥ አስቀድሞ ማን እንደሚያምንህ መናገር በጣም ጠንካራው ነገር ነው።
+- **የደንበኞች ዝርዝር በዓይነት**፦ ድርጅቶች፣ መንግሥታዊ ያልሆኑ ድርጅቶችና ኤምባሲዎች። በዚህ ገበያ ውስጥ አስቀድሞ ማን እንደሚያምንህ መናገር በጣም ጠንካራው ነገር ነው።
 - **በስም የተጠቀሱ አመራርና ቡድን**፣ ከሚናዎችና ከኃላፊነቶች ጋር። የበርካታ ሳይት ውል የሚፈርም ገዢ ማን ተጠያቂ እንደሆነ ማወቅ ይፈልጋል።
 
 ## መዋቅሩ
 
 ሰባት ገጾች፣ እያንዳንዱ ሥራ ያለው፦ መነሻ፣ ስለእኛ፣ አገልግሎቶች፣ ዜና፣ ምስክርነቶች፣ ተደጋጋሚ ጥያቄዎችና መገናኛ።
 
-**ተደጋጋሚ ጥያቄዎች** አብዛኞቹ የተቋም አገልግሎት ገጾች የሚዘሉት ክፍል ሲሆን እዚህ ግን በጣም ብዙ ሥራ የሚሠራው ነው። በቡድን የተከፋፈለ ነው — አጠቃላይ የኩባንያ ጥያቄዎች፣ ከዚያም ከአገልግሎት ጋር የተያያዙ — ገዢ ካልሆነ በስልክ መጠየቅ ያለበትን አስቸጋሪና ተግባራዊ ነገሮችንም ይመልሳል፦ አነስተኛና ሰፊ ውሎች ሁለቱም ይያዛሉ ወይ፣ ጥቅሎች ሊበጁ ይችላሉ ወይ፣ የበርካታ ሳይት ሥራ እንዴት ይመራል።
+**ተደጋጋሚ ጥያቄዎች** አብዛኞቹ የተቋም አገልግሎት ገጾች የሚዘሉት ክፍል ሲሆን እዚህ ግን በጣም ብዙ ሥራ የሚሠራው ነው። በቡድን የተከፋፈለ ነው (አጠቃላይ የኩባንያ ጥያቄዎች፣ ከዚያም ከአገልግሎት ጋር የተያያዙ)፤ ገዢ ካልሆነ በስልክ መጠየቅ ያለበትን አስቸጋሪና ተግባራዊ ነገሮችንም ይመልሳል፦ አነስተኛና ሰፊ ውሎች ሁለቱም ይያዛሉ ወይ፣ ጥቅሎች ሊበጁ ይችላሉ ወይ፣ የበርካታ ሳይት ሥራ እንዴት ይመራል።
 
 **ዜናና ምስክርነቶች** ያሉት የአገልግሎት ኩባንያ ተአማኒነት ገጹ የተተወ ሲመስል ስለሚቀንስ ነው። ሁለቱም ኩባንያው የሚያዘምናቸው ይዘቶች ናቸው።
 
 ## ለምን እንዲህ ይታያል
 
-በአዲስ አበባ ሰማይ መስመር ፎቶግራፍ ላይ የድርጅት ሰማያዊ፣ ሰሪፍ የቃል ምልክት፣ እና ብዙ ክፍት ቦታ። ይህ ከኢአርፒው ጥቅጥቅ ካለ የሥራ በይነገጽ ሆን ተብሎ የተወሰደ ርቀት ነው — ተመሳሳይ ደንበኛ፣ ሁለት ተመልካቾች፤ ሠራተኞቻቸው ቀኑን ሙሉ የሚጠቀሙበት ሶፍትዌር ገዢ ከመፈረሙ በፊት አንድ ጊዜ የሚያየውን ገጽ መምሰል ያለበት ምንም ምክንያት የለም።`,
+በአዲስ አበባ ሰማይ መስመር ፎቶግራፍ ላይ የድርጅት ሰማያዊ፣ ሰሪፍ የቃል ምልክት፣ እና ብዙ ክፍት ቦታ። ይህ ከኢአርፒው ጥቅጥቅ ካለ የሥራ በይነገጽ ሆን ተብሎ የተወሰደ ርቀት ነው፦ ተመሳሳይ ደንበኛ፣ ሁለት ተመልካቾች፤ ሠራተኞቻቸው ቀኑን ሙሉ የሚጠቀሙበት ሶፍትዌር ገዢ ከመፈረሙ በፊት አንድ ጊዜ የሚያየውን ገጽ መምሰል ያለበት ምንም ምክንያት የለም።`,
 		services: [
 			{ label: 'Corporate marketing site', labelAm: 'የድርጅት ማስተዋወቂያ ገጽ' },
 			{ label: 'Service line presentation', labelAm: 'የአገልግሎት መስመር አቀራረብ' },
@@ -560,8 +560,8 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 		outcomes: [
 			{
 				value: '2',
-				label: 'Systems for one client — the site and the ERP behind it',
-				labelAm: 'ለአንድ ደንበኛ ሁለት ሥርዓቶች — ገጹና ከኋላው ያለው ኢአርፒ'
+				label: 'Systems for one client: the site and the ERP behind it',
+				labelAm: 'ለአንድ ደንበኛ ሁለት ሥርዓቶች፤ ገጹና ከኋላው ያለው ኢአርፒ'
 			},
 			{
 				value: '4',
@@ -570,8 +570,8 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 			},
 			{
 				value: '3',
-				label: 'Buyer types addressed — corporate, NGO, embassy',
-				labelAm: 'ሦስት የገዢ ዓይነቶች — ድርጅት፣ መንግሥታዊ ያልሆነ፣ ኤምባሲ'
+				label: 'Buyer types addressed: corporate, NGO, embassy',
+				labelAm: 'ሦስት የገዢ ዓይነቶች፦ ድርጅት፣ መንግሥታዊ ያልሆነ፣ ኤምባሲ'
 			}
 		],
 		images: [
@@ -588,16 +588,16 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 				alt: 'The services page listing the four service lines',
 				altAm: 'አራቱን የአገልግሎት መስመሮች የሚዘረዝር የአገልግሎቶች ገጽ',
 				caption:
-					'Cleaning, security, training and consultancy, and property management — four lines, four sections, no compression.',
-				captionAm: 'ጽዳት፣ ጥበቃ፣ ሥልጠናና ማማከር፣ እና የንብረት አስተዳደር — አራት መስመሮች፣ አራት ክፍሎች።'
+					'Cleaning, security, training and consultancy, and property management: four lines, four sections, no compression.',
+				captionAm: 'ጽዳት፣ ጥበቃ፣ ሥልጠናና ማማከር፣ እና የንብረት አስተዳደር፦ አራት መስመሮች፣ አራት ክፍሎች።'
 			},
 			{
 				image: shot('spotless-general-trading', 'about'),
 				alt: 'The about page with company figures, values and named team members',
 				altAm: 'የኩባንያ አኃዞች፣ እሴቶችና በስም የተጠቀሱ የቡድን አባላት ያሉት የስለእኛ ገጽ',
 				caption:
-					'Figures, values, a leadership message and a named team — the four things a procurement officer checks.',
-				captionAm: 'አኃዞች፣ እሴቶች፣ የአመራር መልእክትና በስም የተጠቀሰ ቡድን — የግዥ ኃላፊ የሚመረምራቸው አራት ነገሮች።'
+					'Figures, values, a leadership message and a named team: the four things a procurement officer checks.',
+				captionAm: 'አኃዞች፣ እሴቶች፣ የአመራር መልእክትና በስም የተጠቀሰ ቡድን፤ የግዥ ኃላፊ የሚመረምራቸው አራት ነገሮች።'
 			},
 			{
 				image: shot('spotless-general-trading', 'faq'),
@@ -628,8 +628,8 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 				alt: 'The contact page with location details',
 				altAm: 'የቦታ ዝርዝሮች ያሉት የመገናኛ ገጽ',
 				caption:
-					'Arat Kilo, Addis Ababa — with the service area stated, which is itself a qualifying question.',
-				captionAm: 'አራት ኪሎ፣ አዲስ አበባ — የአገልግሎት አካባቢውም ተጠቅሷል፤ ይህ ራሱ የሚያጣራ ጥያቄ ነው።'
+					'Arat Kilo, Addis Ababa, with the service area stated, which is itself a qualifying question.',
+				captionAm: 'አራት ኪሎ፣ አዲስ አበባ፤ የአገልግሎት አካባቢውም ተጠቅሷል፤ ይህ ራሱ የሚያጣራ ጥያቄ ነው።'
 			}
 		]
 	},
@@ -641,9 +641,9 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 		client: 'Fro',
 		clientAm: 'ፍሮ',
 		summary:
-			'The web front for a US on-demand services app — bilingual, dark-mode aware, and load-bearing: three of its pages are wired into the mobile app’s live payment and referral flows, not decoration around them.',
+			'The web front for a US on-demand services app, bilingual, dark-mode aware, and load-bearing: three of its pages are wired into the mobile app’s live payment and referral flows, not decoration around them.',
 		summaryAm:
-			'ለአሜሪካ የተዘጋጀ የአገልግሎት መተግበሪያ ድረ-ገጽ ግንባር — በሁለት ቋንቋ፣ የጨለማ ሁነታን የሚያውቅ፣ እና ተሸካሚ፦ ከገጾቹ ሦስቱ በዙሪያው ያሉ ጌጦች ሳይሆኑ በቀጥታ ከመተግበሪያው የክፍያና የሪፈራል ሂደቶች ጋር የተሳሰሩ ናቸው።',
+			'ለአሜሪካ የተዘጋጀ የአገልግሎት መተግበሪያ ድረ-ገጽ ግንባር፤ በሁለት ቋንቋ፣ የጨለማ ሁነታን የሚያውቅ፣ እና ተሸካሚ፦ ከገጾቹ ሦስቱ በዙሪያው ያሉ ጌጦች ሳይሆኑ በቀጥታ ከመተግበሪያው የክፍያና የሪፈራል ሂደቶች ጋር የተሳሰሩ ናቸው።',
 		industry: 'On-demand marketplace (US market)',
 		industryAm: 'የፍላጎት ጊዜ ገበያ (የአሜሪካ ገበያ)',
 		year: '2026',
@@ -656,13 +656,13 @@ A corporate blue over photography of the Addis skyline, a serif wordmark, and a 
 
 Fro is a local-services marketplace: customers book vetted providers who travel to them, pay into escrow, and watch the provider approach on a live map. One account serves both sides through a customer/provider toggle. The app is Flutter, Supabase and Stripe; the brand is Ethiopian-rooted and the market is the United States.
 
-When we picked this up the app had **no public web presence at all** — no marketing page, no reachable privacy policy, no support URL. That is not a marketing gap, it is a blocker: Apple requires a marketing URL, a working support URL and a privacy policy URL, and Google Play additionally requires a public account-deletion request URL. The app could not be submitted.
+When we picked this up the app had **no public web presence at all**: no marketing page, no reachable privacy policy, no support URL. That is not a marketing gap, it is a blocker: Apple requires a marketing URL, a working support URL and a privacy policy URL, and Google Play additionally requires a public account-deletion request URL. The app could not be submitted.
 
 ## Three pages that are infrastructure
 
 Most marketing sites can be rewritten freely. Three of these cannot, because shipping code already points at them:
 
-- **\`/payment-complete\`** is the \`return_url\` the booking payment edge function hands to Stripe, and the checkout WebView inside the app watches for that exact URL to know when to close the payment sheet. Before this site existed, that URL 404'd — the payment succeeded and the sheet had nothing to catch.
+- **\`/payment-complete\`** is the \`return_url\` the booking payment edge function hands to Stripe, and the checkout WebView inside the app watches for that exact URL to know when to close the payment sheet. Before this site existed, that URL 404'd: the payment succeeded and the sheet had nothing to catch.
 - **\`/tip-complete\`** does the same job for the tipping flow.
 - **\`/join?ref=…\`** is where the in-app referral link lands, so it has to carry the referral code through to the store.
 
@@ -676,7 +676,7 @@ Getting those wrong does not make a page look bad; it breaks a payment.
 
 **Two audiences, two arguments.** Customers get escrow payments, identity-verified providers, live arrival tracking and card payment. Providers get the economics stated plainly on the page rather than buried in a help centre: 20% added on top and never taken out of their rate, a $10 minimum withdrawal, 24-hour auto-release after the job is finished, and a 5% lifetime share on referrals. A provider deciding whether to sign up is doing arithmetic, so the arithmetic is the headline.
 
-**Pre-launch, honestly.** The app is not out yet, so the store badges say "Coming soon" and the site captures an email for launch — collecting address and language only, and saying so next to the field.
+**Pre-launch, honestly.** The app is not out yet, so the store badges say "Coming soon" and the site captures an email for launch: collecting address and language only, and saying so next to the field.
 
 ## The compliance half
 
@@ -689,13 +689,13 @@ The Ethiopian border pattern running under each section. The brand is aimed at A
 
 ፍሮ የአካባቢ አገልግሎት ገበያ ነው፦ ደንበኞች ወደነሱ የሚጓዙ የተረጋገጡ አቅራቢዎችን ያስይዛሉ፣ ገንዘቡን በአደራ ሒሳብ ይከፍላሉ፣ አቅራቢውም ሲቃረብ በቀጥታ ካርታ ላይ ይመለከታሉ። አንድ መለያ በደንበኛ/አቅራቢ መቀያየሪያ ሁለቱንም ወገኖች ያገለግላል። መተግበሪያው Flutter፣ Supabase እና Stripe ነው፤ የምርት ስሙ ኢትዮጵያዊ መሠረት ያለው ሲሆን ገበያው አሜሪካ ነው።
 
-ይህን ስንረከብ መተግበሪያው **ምንም ዓይነት የሕዝብ ድረ-ገጽ አልነበረውም** — የማስተዋወቂያ ገጽ የለም፣ ሊደረስበት የሚችል የግላዊነት ፖሊሲ የለም፣ የድጋፍ አድራሻ የለም። ይህ የገበያ ክፍተት ሳይሆን እንቅፋት ነው፦ አፕል የማስተዋወቂያ አድራሻ፣ የሚሠራ የድጋፍ አድራሻና የግላዊነት ፖሊሲ አድራሻ ይጠይቃል፤ ጉግል ፕሌይም በተጨማሪ የሕዝብ የመለያ ስረዛ ጥያቄ አድራሻ ይጠይቃል። መተግበሪያው ሊቀርብ አይችልም ነበር።
+ይህን ስንረከብ መተግበሪያው **ምንም ዓይነት የሕዝብ ድረ-ገጽ አልነበረውም**፦ የማስተዋወቂያ ገጽ የለም፣ ሊደረስበት የሚችል የግላዊነት ፖሊሲ የለም፣ የድጋፍ አድራሻ የለም። ይህ የገበያ ክፍተት ሳይሆን እንቅፋት ነው፦ አፕል የማስተዋወቂያ አድራሻ፣ የሚሠራ የድጋፍ አድራሻና የግላዊነት ፖሊሲ አድራሻ ይጠይቃል፤ ጉግል ፕሌይም በተጨማሪ የሕዝብ የመለያ ስረዛ ጥያቄ አድራሻ ይጠይቃል። መተግበሪያው ሊቀርብ አይችልም ነበር።
 
 ## መሠረተ ልማት የሆኑ ሦስት ገጾች
 
 አብዛኞቹ የማስተዋወቂያ ገጾች በነጻነት ሊጻፉ ይችላሉ። ከእነዚህ ሦስቱ ግን አይችሉም፤ ምክንያቱም አስቀድሞ የሚሠራ ኮድ ወደነሱ ስለሚያመለክት፦
 
-- **\`/payment-complete\`** የቦታ ማስያዣ ክፍያ ተግባር ለStripe የሚሰጠው \`return_url\` ነው፤ በመተግበሪያው ውስጥ ያለው የክፍያ መስኮትም የክፍያ ገጹን መቼ መዝጋት እንዳለበት ለማወቅ ያንኑ አድራሻ ይጠብቃል። ይህ ገጽ ከመኖሩ በፊት ያ አድራሻ 404 ይመልስ ነበር — ክፍያው ተሳክቶ መስኮቱ የሚይዘው ነገር አልነበረም።
+- **\`/payment-complete\`** የቦታ ማስያዣ ክፍያ ተግባር ለStripe የሚሰጠው \`return_url\` ነው፤ በመተግበሪያው ውስጥ ያለው የክፍያ መስኮትም የክፍያ ገጹን መቼ መዝጋት እንዳለበት ለማወቅ ያንኑ አድራሻ ይጠብቃል። ይህ ገጽ ከመኖሩ በፊት ያ አድራሻ 404 ይመልስ ነበር፤ ክፍያው ተሳክቶ መስኮቱ የሚይዘው ነገር አልነበረም።
 - **\`/tip-complete\`** ለጉርሻ ሂደት ተመሳሳይ ሥራ ይሠራል።
 - **\`/join?ref=…\`** በመተግበሪያው ውስጥ ያለው የሪፈራል አገናኝ የሚያርፍበት ነው፤ ስለዚህ የሪፈራል ኮዱን ወደ መደብሩ ማሸጋገር አለበት።
 
@@ -709,7 +709,7 @@ The Ethiopian border pattern running under each section. The brand is aimed at A
 
 **ሁለት ተመልካቾች፣ ሁለት መከራከሪያዎች።** ደንበኞች የአደራ ክፍያ፣ ማንነታቸው የተረጋገጠ አቅራቢዎች፣ የቀጥታ መድረሻ ክትትልና የካርድ ክፍያ ያገኛሉ። አቅራቢዎች ደግሞ በእገዛ ማዕከል ውስጥ ከመቀበር ይልቅ በገጹ ላይ በግልጽ የተቀመጠ ስሌት ያገኛሉ፦ 20% ከዋጋቸው ላይ ሳይቀነስ በላዩ ላይ የሚጨመር፣ የ$10 ዝቅተኛ የማውጣት መጠን፣ ሥራው ካለቀ በኋላ በ24 ሰዓት ውስጥ በራሱ የሚለቀቅ ክፍያ፣ እና በሪፈራል ላይ የ5% የዕድሜ ልክ ድርሻ። ለመመዝገብ የሚያስብ አቅራቢ ስሌት እየሠራ ነው፤ ስለዚህ ስሌቱ ራሱ አርዕስቱ ነው።
 
-**ከመውጣቱ በፊት፣ በእውነተኝነት።** መተግበሪያው ገና አልወጣም፤ ስለዚህ የመደብር ምልክቶቹ "በቅርቡ" ይላሉ፤ ገጹም ለመውጫው ኢሜይል ይሰበስባል — አድራሻና ቋንቋ ብቻ በመያዝ፣ ይህንንም ከመስኩ አጠገብ በመግለጽ።
+**ከመውጣቱ በፊት፣ በእውነተኝነት።** መተግበሪያው ገና አልወጣም፤ ስለዚህ የመደብር ምልክቶቹ "በቅርቡ" ይላሉ፤ ገጹም ለመውጫው ኢሜይል ይሰበስባል፦ አድራሻና ቋንቋ ብቻ በመያዝ፣ ይህንንም ከመስኩ አጠገብ በመግለጽ።
 
 ## የተገዢነት ግማሽ
 
@@ -729,7 +729,7 @@ The Ethiopian border pattern running under each section. The brand is aimed at A
 		outcomes: [
 			{
 				value: '3',
-				label: 'Store requirements unblocked — marketing, support, privacy',
+				label: 'Store requirements unblocked: marketing, support, privacy',
 				labelAm: 'ሦስት የመደብር መስፈርቶች ተፈቱ'
 			},
 			{
@@ -770,8 +770,8 @@ The Ethiopian border pattern running under each section. The brand is aimed at A
 				alt: 'The safety page',
 				altAm: 'የደኅንነት ገጽ',
 				caption:
-					'Vetting, escrow and tracking explained plainly — the objections a first-time customer actually has.',
-				captionAm: 'ማጣራት፣ የአደራ ሒሳብና ክትትል በግልጽ የተብራሩ — አዲስ ደንበኛ በእውነት የሚያነሳቸው ጥያቄዎች።'
+					'Vetting, escrow and tracking explained plainly: the objections a first-time customer actually has.',
+				captionAm: 'ማጣራት፣ የአደራ ሒሳብና ክትትል በግልጽ የተብራሩ፤ አዲስ ደንበኛ በእውነት የሚያነሳቸው ጥያቄዎች።'
 			},
 			{
 				image: shot('fro-services', 'support'),
@@ -817,17 +817,17 @@ Building those separately is how a shop ends up selling something the warehouse 
 
 ## The storefront
 
-A catalogue with categories, product galleries and **priced ranges** — a product is sold in several pack sizes, each with its own price, rather than as a single line with a single number. Customers get real accounts: an order history, saved delivery addresses, a settings page and password reset.
+A catalogue with categories, product galleries and **priced ranges**: a product is sold in several pack sizes, each with its own price, rather than as a single line with a single number. Customers get real accounts: an order history, saved delivery addresses, a settings page and password reset.
 
 **Delivery pricing is server-side, always.** The fee is looked up from the delivery area the customer picked, orders at or above the free-delivery threshold pay nothing whatever the area, and local pickup is free by definition. The same function serves checkout and the dashboard, so the fee quoted to a customer and the fee staff see on that order are the one number. A fee posted by a browser is never trusted.
 
-**Recipes** are a genuine content section, not filler: each recipe carries prep and cook times, instructions, a featured image and its ingredient list — which links to the products the shop actually sells.
+**Recipes** are a genuine content section, not filler: each recipe carries prep and cook times, instructions, a featured image and its ingredient list, which links to the products the shop actually sells.
 
 ## The back office
 
 **Products and stock.** Categories, images, suppliers, and a stock ledger built from adjustments: every movement is a signed row with a reason, and a sale links directly to the transaction that caused it. Damaged stock is recorded against the product rather than quietly deducted, so wastage is a number somebody can look at.
 
-**Orders.** All orders, delivered, cancelled — each with its customer, its items, its delivery fee and its payment method. Customer records carry their full order history.
+**Orders.** All orders, delivered, cancelled; each with its customer, its items, its delivery fee and its payment method. Customer records carry their full order history.
 
 **Money and reporting.** Transactions, discounts, free-delivery thresholds, payment methods and a reports screen over the lot.
 
@@ -835,7 +835,7 @@ A catalogue with categories, product galleries and **priced ranges** — a produ
 
 ## The result
 
-One place where a price change, a stock count and a customer's order are the same set of facts. The shop cannot sell what the warehouse does not have, and the month-end question — what did we actually make on this — has an answer that does not require assembling it from three spreadsheets.`,
+One place where a price change, a stock count and a customer's order are the same set of facts. The shop cannot sell what the warehouse does not have, and the month-end question (what did we actually make on this) has an answer that does not require assembling it from three spreadsheets.`,
 		bodyAm: `## አንድ መሆን የነበረባቸው ሁለት ሥርዓቶች
 
 የዳቦ መጋገሪያ ግብዓት አቅራቢ ለሕዝብም ለንግድም ይሸጣል፤ ሁለቱ ደግሞ ከውስጥ ሲታዩ ምንም አይመሳሰሉም። ሱቁ ካታሎግ፣ ጋሪ፣ የማድረሻ ክፍያና የትዕዛዝ ማረጋገጫ ይፈልጋል። ንግዱ ግን የከፈለውን፣ የቀረውን፣ የባከነውንና ማን እንደሚያዘው ማወቅ አለበት።
@@ -844,17 +844,17 @@ One place where a price change, a stock count and a customer's order are the sam
 
 ## የመሸጫ ገጹ
 
-ከምድቦች፣ ከምርት ማዕከለ-ሥዕላትና ከ**ዋጋ ካላቸው መጠኖች** ጋር ካታሎግ — አንድ ምርት በአንድ መስመርና በአንድ ቁጥር ሳይሆን በተለያዩ የማሸጊያ መጠኖች፣ እያንዳንዱም በራሱ ዋጋ ይሸጣል። ደንበኞች እውነተኛ መለያ ያገኛሉ፦ የትዕዛዝ ታሪክ፣ የተቀመጡ የማድረሻ አድራሻዎች፣ የቅንብር ገጽና የይለፍ ቃል ማደሻ።
+ከምድቦች፣ ከምርት ማዕከለ-ሥዕላትና ከ**ዋጋ ካላቸው መጠኖች** ጋር ካታሎግ፦ አንድ ምርት በአንድ መስመርና በአንድ ቁጥር ሳይሆን በተለያዩ የማሸጊያ መጠኖች፣ እያንዳንዱም በራሱ ዋጋ ይሸጣል። ደንበኞች እውነተኛ መለያ ያገኛሉ፦ የትዕዛዝ ታሪክ፣ የተቀመጡ የማድረሻ አድራሻዎች፣ የቅንብር ገጽና የይለፍ ቃል ማደሻ።
 
 **የማድረሻ ዋጋ ሁልጊዜ በአገልጋዩ በኩል ነው።** ክፍያው ደንበኛው ከመረጠው የማድረሻ አካባቢ ይፈለጋል፤ ከነጻ ማድረሻ ገደብ በላይ የሆኑ ትዕዛዞች አካባቢው ምንም ይሁን ምን ምንም አይከፍሉም፤ በቦታው መውሰድም በተፈጥሮው ነጻ ነው። ተመሳሳዩ ተግባር ለክፍያ ሂደቱም ለዳሽቦርዱም ያገለግላል፤ ስለዚህ ለደንበኛ የተነገረውና ሠራተኞች በዚያ ትዕዛዝ ላይ የሚያዩት ክፍያ አንድ ቁጥር ነው።
 
-**የምግብ አሠራሮች** እውነተኛ የይዘት ክፍል ናቸው፦ እያንዳንዱ አሠራር የዝግጅትና የማብሰያ ጊዜ፣ መመሪያ፣ ምስልና የግብዓት ዝርዝር ይዟል — ይህም ሱቁ በእውነት ከሚሸጣቸው ምርቶች ጋር የተገናኘ ነው።
+**የምግብ አሠራሮች** እውነተኛ የይዘት ክፍል ናቸው፦ እያንዳንዱ አሠራር የዝግጅትና የማብሰያ ጊዜ፣ መመሪያ፣ ምስልና የግብዓት ዝርዝር ይዟል፤ ይህም ሱቁ በእውነት ከሚሸጣቸው ምርቶች ጋር የተገናኘ ነው።
 
 ## የጀርባ ቢሮው
 
 **ምርቶችና ክምችት።** ምድቦች፣ ምስሎች፣ አቅራቢዎች፣ እና ከማስተካከያዎች የተገነባ የክምችት መዝገብ፦ እያንዳንዱ እንቅስቃሴ ምክንያት ያለው ምልክት ያለው ረድፍ ነው፤ ሽያጭም ካስከተለው ግብይት ጋር በቀጥታ ይገናኛል። የተበላሸ ክምችት በዝምታ ከመቀነስ ይልቅ በምርቱ ላይ ይመዘገባል፤ ስለዚህ ብክነት ሰው ሊያየው የሚችል ቁጥር ነው።
 
-**ትዕዛዞች።** ሁሉም ትዕዛዞች፣ የደረሱ፣ የተሰረዙ — እያንዳንዱ ከደንበኛው፣ ከዕቃዎቹ፣ ከማድረሻ ክፍያውና ከክፍያ ዘዴው ጋር።
+**ትዕዛዞች።** ሁሉም ትዕዛዞች፣ የደረሱ፣ የተሰረዙ፦ እያንዳንዱ ከደንበኛው፣ ከዕቃዎቹ፣ ከማድረሻ ክፍያውና ከክፍያ ዘዴው ጋር።
 
 **ገንዘብና ሪፖርት።** ግብይቶች፣ ቅናሾች፣ የነጻ ማድረሻ ገደቦች፣ የክፍያ ዘዴዎችና በሁሉም ላይ የሪፖርት ገጽ።
 
@@ -884,8 +884,8 @@ One place where a price change, a stock count and a customer's order are the sam
 			},
 			{
 				value: '2',
-				label: 'Audiences — retail and trade — on one catalogue',
-				labelAm: 'ሁለት ተጠቃሚዎች — ችርቻሮና ንግድ — በአንድ ካታሎግ'
+				label: 'Audiences (retail and trade) on one catalogue',
+				labelAm: 'ሁለት ተጠቃሚዎች (ችርቻሮና ንግድ) በአንድ ካታሎግ'
 			}
 		],
 		images: [
@@ -900,9 +900,8 @@ One place where a price change, a stock count and a customer's order are the sam
 				image: shot('lalo-bakery-solutions', 'shop'),
 				alt: 'The product catalogue with categories',
 				altAm: 'ከምድቦች ጋር የምርት ካታሎግ',
-				caption:
-					'Products are sold in priced ranges — several pack sizes, each with its own price.',
-				captionAm: 'ምርቶች ዋጋ ባላቸው መጠኖች ይሸጣሉ — በተለያዩ የማሸጊያ መጠኖች፣ እያንዳንዱ በራሱ ዋጋ።'
+				caption: 'Products are sold in priced ranges: several pack sizes, each with its own price.',
+				captionAm: 'ምርቶች ዋጋ ባላቸው መጠኖች ይሸጣሉ፦ በተለያዩ የማሸጊያ መጠኖች፣ እያንዳንዱ በራሱ ዋጋ።'
 			},
 			{
 				image: shot('lalo-bakery-solutions', 'recipes'),
@@ -936,9 +935,9 @@ One place where a price change, a stock count and a customer's order are the sam
 		client: 'Golla Design Group',
 		clientAm: 'ጎላ ዲዛይን ግሩፕ',
 		summary:
-			'A portfolio site and content system for an Addis Ababa architecture and design-build practice, where the work itself — projects, galleries and video — is the product and has to be published without a developer.',
+			'A portfolio site and content system for an Addis Ababa architecture and design-build practice, where the work itself (projects, galleries and video) is the product and has to be published without a developer.',
 		summaryAm:
-			'በአዲስ አበባ ለሚገኝ የሕንፃ ዲዛይንና ግንባታ ድርጅት የተሠራ የሥራ ማሳያ ገጽና የይዘት ሥርዓት፤ ሥራው ራሱ — ፕሮጀክቶች፣ ማዕከለ-ሥዕላትና ቪዲዮ — ምርቱ ስለሆነ ያለ ገንቢ መታተም አለበት።',
+			'በአዲስ አበባ ለሚገኝ የሕንፃ ዲዛይንና ግንባታ ድርጅት የተሠራ የሥራ ማሳያ ገጽና የይዘት ሥርዓት፤ ሥራው ራሱ (ፕሮጀክቶች፣ ማዕከለ-ሥዕላትና ቪዲዮ) ምርቱ ስለሆነ ያለ ገንቢ መታተም አለበት።',
 		industry: 'Architecture & interior design',
 		industryAm: 'ሕንፃ ዲዛይንና የውስጥ ማስዋብ',
 		year: '2025',
@@ -949,13 +948,13 @@ One place where a price change, a stock count and a customer's order are the sam
 		coverImageAltAm: 'የጎላ ዲዛይን ግሩፕ መነሻ ገጽ',
 		body: `## A practice whose website is its portfolio
 
-Golla is an architectural and design-build practice in Addis Ababa working in quiet, intentional spaces and bespoke materials. For a practice like that the website is not marketing collateral around the work — it *is* the work, and it goes out of date the moment a project completes.
+Golla is an architectural and design-build practice in Addis Ababa working in quiet, intentional spaces and bespoke materials. For a practice like that the website is not marketing collateral around the work: it *is* the work, and it goes out of date the moment a project completes.
 
 So the build treats publishing as the primary use case rather than an afterthought.
 
 ## What it does
 
-**Projects and portfolio, with real media.** A project carries a category, a description, a cover image, an image gallery and video. Galleries are ordered, and images are compressed in the browser before upload — a practice photographing its own buildings uploads 8MB files, and nobody should have to think about that.
+**Projects and portfolio, with real media.** A project carries a category, a description, a cover image, an image gallery and video. Galleries are ordered, and images are compressed in the browser before upload: a practice photographing its own buildings uploads 8MB files, and nobody should have to think about that.
 
 **Services**, each with its own gallery, so a service page shows work rather than describing it.
 
@@ -973,16 +972,16 @@ The whole thing runs on SQLite through libSQL, which for a practice of this size
 
 ## Why it reads the way it does
 
-Almost every architecture-practice site in Ethiopia is a template with the practice's photographs dropped into it. This one was built around the specific thing Golla does — the long, slow reveal of a space — which is why the home page is a full-bleed image with a single line of type on it, and why the portfolio is a grid that gets out of the way.`,
+Almost every architecture-practice site in Ethiopia is a template with the practice's photographs dropped into it. This one was built around the specific thing Golla does (the long, slow reveal of a space), which is why the home page is a full-bleed image with a single line of type on it, and why the portfolio is a grid that gets out of the way.`,
 		bodyAm: `## ድረ-ገጹ ራሱ የሥራ ማሳያው የሆነ ድርጅት
 
-ጎላ በአዲስ አበባ የሚገኝ የሕንፃ ዲዛይንና ግንባታ ድርጅት ሲሆን በጸጥታና በሆን ተብለው በተዘጋጁ ቦታዎችና በተለዩ ቁሳቁሶች ላይ ይሠራል። ለእንዲህ ዓይነት ድርጅት ድረ-ገጹ በሥራው ዙሪያ ያለ የገበያ ማስተዋወቂያ አይደለም — ራሱ *ሥራው* ነው፤ አንድ ፕሮጀክት እንደተጠናቀቀም ወዲያውኑ ያረጃል።
+ጎላ በአዲስ አበባ የሚገኝ የሕንፃ ዲዛይንና ግንባታ ድርጅት ሲሆን በጸጥታና በሆን ተብለው በተዘጋጁ ቦታዎችና በተለዩ ቁሳቁሶች ላይ ይሠራል። ለእንዲህ ዓይነት ድርጅት ድረ-ገጹ በሥራው ዙሪያ ያለ የገበያ ማስተዋወቂያ አይደለም፤ ራሱ *ሥራው* ነው፤ አንድ ፕሮጀክት እንደተጠናቀቀም ወዲያውኑ ያረጃል።
 
 ስለዚህ ግንባታው ማተምን እንደ ዋና ተግባር እንጂ እንደ ተጨማሪ ነገር አይመለከተውም።
 
 ## ምን ያደርጋል
 
-**ፕሮጀክቶችና የሥራ ማሳያ፣ ከእውነተኛ ሚዲያ ጋር።** አንድ ፕሮጀክት ምድብ፣ መግለጫ፣ ሽፋን ምስል፣ የምስል ማዕከለ-ሥዕልና ቪዲዮ ይይዛል። ማዕከለ-ሥዕላቱ የተደረደሩ ናቸው፤ ምስሎችም ከመጫናቸው በፊት በአሳሹ ውስጥ ይጨመቃሉ — የራሱን ሕንፃዎች የሚያነሳ ድርጅት የ8 ሜጋባይት ፋይሎችን ይጭናል፤ ስለዚህ ማንም ስለዚያ ማሰብ የለበትም።
+**ፕሮጀክቶችና የሥራ ማሳያ፣ ከእውነተኛ ሚዲያ ጋር።** አንድ ፕሮጀክት ምድብ፣ መግለጫ፣ ሽፋን ምስል፣ የምስል ማዕከለ-ሥዕልና ቪዲዮ ይይዛል። ማዕከለ-ሥዕላቱ የተደረደሩ ናቸው፤ ምስሎችም ከመጫናቸው በፊት በአሳሹ ውስጥ ይጨመቃሉ፤ የራሱን ሕንፃዎች የሚያነሳ ድርጅት የ8 ሜጋባይት ፋይሎችን ይጭናል፤ ስለዚህ ማንም ስለዚያ ማሰብ የለበትም።
 
 **አገልግሎቶች**፣ እያንዳንዱ የራሱ ማዕከለ-ሥዕል ያለው፤ ስለዚህ የአገልግሎት ገጽ ከመግለጽ ይልቅ ሥራ ያሳያል።
 
@@ -1017,7 +1016,7 @@ Almost every architecture-practice site in Ethiopia is a template with the pract
 			},
 			{
 				value: '3',
-				label: 'Media types per project — image, gallery, video',
+				label: 'Media types per project: image, gallery, video',
 				labelAm: 'በአንድ ፕሮጀክት ሦስት የሚዲያ ዓይነቶች'
 			},
 			{ value: '1', label: 'File to back up the whole site', labelAm: 'ሙሉውን ገጽ ለመጠበቅ አንድ ፋይል' }
@@ -1050,8 +1049,8 @@ Almost every architecture-practice site in Ethiopia is a template with the pract
 				image: shot('golla-design-group', 'about'),
 				alt: 'The about page introducing the practice',
 				altAm: 'ድርጅቱን የሚያስተዋውቅ የስለእኛ ገጽ',
-				caption: 'Practice, team and approach — a page the studio maintains itself.',
-				captionAm: 'ድርጅቱ፣ ቡድኑና አካሄዱ — ስቱዲዮው ራሱ የሚያስተዳድረው ገጽ።'
+				caption: 'Practice, team and approach: a page the studio maintains itself.',
+				captionAm: 'ድርጅቱ፣ ቡድኑና አካሄዱ፤ ስቱዲዮው ራሱ የሚያስተዳድረው ገጽ።'
 			},
 			{
 				image: shot('golla-design-group', 'blogs'),
@@ -1091,13 +1090,13 @@ Almost every architecture-practice site in Ethiopia is a template with the pract
 		coverImageAltAm: 'የየበሕር ኢቨንትስ መነሻ ገጽ',
 		body: `## Selling something people have to picture
 
-An events business sells an outcome nobody can see in advance. The website's whole job is to let someone picture their wedding, their conference or their launch in a room they have never stood in — and then make asking about it easy enough that they actually do.
+An events business sells an outcome nobody can see in advance. The website's whole job is to let someone picture their wedding, their conference or their launch in a room they have never stood in, and then make asking about it easy enough that they actually do.
 
 ## Venues, described properly
 
 A venue is not a photograph and a phone number. Here it carries structured details, a **feature list**, an image gallery and video, so two venues can be compared on the things that decide the booking: capacity, what is included, what is not.
 
-There is a **venue booking** record behind it, and a **venue lottery** — a registration list against a venue, for the promotions this business runs.
+There is a **venue booking** record behind it, and a **venue lottery**: a registration list against a venue, for the promotions this business runs.
 
 ## Events and services
 
@@ -1111,16 +1110,16 @@ That single design decision is the difference between an enquiry someone has to 
 
 ## Behind it
 
-Blog with categories and galleries, testimonials, team, a contact inbox, logo management, and role-based permissions with per-user overrides. It runs on SQLite through libSQL — the same reasoning as the other sites of this size: nothing to administer, and a backup is a file copy.`,
+Blog with categories and galleries, testimonials, team, a contact inbox, logo management, and role-based permissions with per-user overrides. It runs on SQLite through libSQL, the same reasoning as the other sites of this size: nothing to administer, and a backup is a file copy.`,
 		bodyAm: `## ሰዎች መገመት ያለባቸውን ነገር መሸጥ
 
-የዝግጅት ንግድ ማንም አስቀድሞ ሊያየው የማይችለውን ውጤት ይሸጣል። የድረ-ገጹ ሙሉ ሥራ አንድ ሰው ሠርጉን፣ ጉባኤውን ወይም ምረቃውን ገና ባልቆመበት አዳራሽ ውስጥ እንዲገምት ማድረግ ነው — ከዚያም ስለሱ መጠየቅን በእውነት እስኪያደርገው ድረስ ቀላል ማድረግ።
+የዝግጅት ንግድ ማንም አስቀድሞ ሊያየው የማይችለውን ውጤት ይሸጣል። የድረ-ገጹ ሙሉ ሥራ አንድ ሰው ሠርጉን፣ ጉባኤውን ወይም ምረቃውን ገና ባልቆመበት አዳራሽ ውስጥ እንዲገምት ማድረግ ነው፦ ከዚያም ስለሱ መጠየቅን በእውነት እስኪያደርገው ድረስ ቀላል ማድረግ።
 
 ## አዳራሾች፣ በአግባቡ የተገለጹ
 
 አዳራሽ ፎቶና የስልክ ቁጥር አይደለም። እዚህ የተደራጁ ዝርዝሮችን፣ **የባህሪ ዝርዝርን**፣ የምስል ማዕከለ-ሥዕልንና ቪዲዮን ይይዛል፤ ስለዚህ ሁለት አዳራሾች ቦታ ማስያዙን በሚወስኑ ነገሮች ላይ ሊነጻጸሩ ይችላሉ፦ አቅም፣ የተካተተው ምንድን ነው፣ ያልተካተተው ምንድን ነው።
 
-ከኋላው የ**አዳራሽ ቦታ ማስያዝ** መዝገብ አለ፤ እንዲሁም **የአዳራሽ ዕጣ** — በአዳራሽ ላይ የምዝገባ ዝርዝር፤ ይህ ንግድ ለሚያካሂዳቸው ማስተዋወቂያዎች።
+ከኋላው የ**አዳራሽ ቦታ ማስያዝ** መዝገብ አለ፤ እንዲሁም **የአዳራሽ ዕጣ**፤ በአዳራሽ ላይ የምዝገባ ዝርዝር፤ ይህ ንግድ ለሚያካሂዳቸው ማስተዋወቂያዎች።
 
 ## ዝግጅቶችና አገልግሎቶች
 
@@ -1186,8 +1185,8 @@ Blog with categories and galleries, testimonials, team, a contact inbox, logo ma
 				alt: 'The structured quote request form',
 				altAm: 'የተደራጀ የዋጋ ጥያቄ ቅጽ',
 				caption:
-					'Date, location, guest count and budget — asked up front, so a quote can be written the same day.',
-				captionAm: 'ቀን፣ ቦታ፣ የእንግዳ ብዛትና በጀት — አስቀድመው ይጠየቃሉ፤ ስለዚህ ዋጋ በዚያኑ ቀን ሊጻፍ ይችላል።'
+					'Date, location, guest count and budget: asked up front, so a quote can be written the same day.',
+				captionAm: 'ቀን፣ ቦታ፣ የእንግዳ ብዛትና በጀት፤ አስቀድመው ይጠየቃሉ፤ ስለዚህ ዋጋ በዚያኑ ቀን ሊጻፍ ይችላል።'
 			},
 			{
 				image: shot('yebehir-events', 'services'),
@@ -1235,20 +1234,20 @@ That makes the website an act of proof, not persuasion. The build is organised a
 
 Every one of these is a table the client edits:
 
-- **Coffee regions and sub-regions** — Jimma, Limu, and the growing areas beneath them, each with its own profile.
-- **Coffee products** — grades and lots, tied to where they came from.
-- **Farms** — the actual sources, with their own pages.
-- **Traceability steps** — the chain from cherry to container, laid out as ordered stages. This is the section that answers the buyer's real question.
-- **Export markets** — where the company already ships, which is itself a credential.
-- **Ventures** — the group's other businesses.
-- **Milestones** — the company timeline.
+- **Coffee regions and sub-regions**: Jimma, Limu, and the growing areas beneath them, each with its own profile.
+- **Coffee products**: grades and lots, tied to where they came from.
+- **Farms**: the actual sources, with their own pages.
+- **Traceability steps**: the chain from cherry to container, laid out as ordered stages. This is the section that answers the buyer's real question.
+- **Export markets**: where the company already ships, which is itself a credential.
+- **Ventures**: the group's other businesses.
+- **Milestones**: the company timeline.
 - **Value propositions, partners, FAQs, gallery and testimonials.**
 
 Alongside those: page heroes and site settings, so the headline image and the contact details on any page are content rather than code.
 
 ## Why it was built this way
 
-The alternative — a designer's static pages — would have been faster to ship and wrong within a season. Harvests change, grades change, markets are added. A site that cannot keep up with the crop year stops being used, and an exporter's website that says last year's harvest is worse than no website at all.
+The alternative (a designer's static pages) would have been faster to ship and wrong within a season. Harvests change, grades change, markets are added. A site that cannot keep up with the crop year stops being used, and an exporter's website that says last year's harvest is worse than no website at all.
 
 ## The dashboard
 
@@ -1263,20 +1262,20 @@ Every section above has a management screen, with an image gallery, role-based p
 
 ከእነዚህ እያንዳንዱ ደንበኛው የሚያስተካክለው ሠንጠረዥ ነው፦
 
-- **የቡና ክልሎችና ንዑስ ክልሎች** — ጅማ፣ ሊሙ፣ እና ከሥራቸው ያሉት የማምረቻ አካባቢዎች፤ እያንዳንዱ የራሱ መገለጫ ያለው።
-- **የቡና ምርቶች** — ደረጃዎችና ዓይነቶች፣ ከመጡበት ቦታ ጋር የተሳሰሩ።
-- **እርሻዎች** — እውነተኛዎቹ ምንጮች፣ የራሳቸው ገጽ ያላቸው።
-- **የክትትል ደረጃዎች** — ከፍሬ እስከ ኮንቴይነር ያለው ሰንሰለት፣ በተደረደሩ ደረጃዎች የቀረበ። ይህ የገዢውን እውነተኛ ጥያቄ የሚመልስ ክፍል ነው።
-- **የወጪ ንግድ ገበያዎች** — ኩባንያው አስቀድሞ የሚልክባቸው ቦታዎች፤ ይህ ራሱ ማረጋገጫ ነው።
-- **ንግዶች** — የቡድኑ ሌሎች ንግዶች።
-- **ምዕራፎች** — የኩባንያው የጊዜ ሰሌዳ።
+- **የቡና ክልሎችና ንዑስ ክልሎች**፦ ጅማ፣ ሊሙ፣ እና ከሥራቸው ያሉት የማምረቻ አካባቢዎች፤ እያንዳንዱ የራሱ መገለጫ ያለው።
+- **የቡና ምርቶች**፦ ደረጃዎችና ዓይነቶች፣ ከመጡበት ቦታ ጋር የተሳሰሩ።
+- **እርሻዎች**፦ እውነተኛዎቹ ምንጮች፣ የራሳቸው ገጽ ያላቸው።
+- **የክትትል ደረጃዎች**፦ ከፍሬ እስከ ኮንቴይነር ያለው ሰንሰለት፣ በተደረደሩ ደረጃዎች የቀረበ። ይህ የገዢውን እውነተኛ ጥያቄ የሚመልስ ክፍል ነው።
+- **የወጪ ንግድ ገበያዎች**፤ ኩባንያው አስቀድሞ የሚልክባቸው ቦታዎች፤ ይህ ራሱ ማረጋገጫ ነው።
+- **ንግዶች**፦ የቡድኑ ሌሎች ንግዶች።
+- **ምዕራፎች**፦ የኩባንያው የጊዜ ሰሌዳ።
 - **የእሴት አቅርቦቶች፣ አጋሮች፣ ተደጋጋሚ ጥያቄዎች፣ ማዕከለ-ሥዕልና ምስክርነቶች።**
 
 ከእነዚህ ጎን፦ የገጽ ራስጌዎችና የገጽ ቅንብሮች፤ ስለዚህ የማንኛውም ገጽ ዋና ምስልና የመገናኛ ዝርዝሮች ኮድ ሳይሆኑ ይዘት ናቸው።
 
 ## ለምን እንዲህ ተገነባ
 
-አማራጩ — የንድፍ ባለሙያ የማይለወጡ ገጾች — ለማውጣት ፈጣን ሆኖ በአንድ ወቅት ውስጥ ስሕተት ይሆን ነበር። ምርት ይለወጣል፣ ደረጃዎች ይለወጣሉ፣ ገበያዎች ይጨመራሉ። ከምርት ዓመቱ ጋር መራመድ የማይችል ገጽ መጠቀሙ ያበቃል፤ የላለፈውን ዓመት ምርት የሚናገር የላኪ ድረ-ገጽ ደግሞ ከምንም ገጽ የከፋ ነው።
+አማራጩ (የንድፍ ባለሙያ የማይለወጡ ገጾች) ለማውጣት ፈጣን ሆኖ በአንድ ወቅት ውስጥ ስሕተት ይሆን ነበር። ምርት ይለወጣል፣ ደረጃዎች ይለወጣሉ፣ ገበያዎች ይጨመራሉ። ከምርት ዓመቱ ጋር መራመድ የማይችል ገጽ መጠቀሙ ያበቃል፤ የላለፈውን ዓመት ምርት የሚናገር የላኪ ድረ-ገጽ ደግሞ ከምንም ገጽ የከፋ ነው።
 
 ## ዳሽቦርዱ
 
@@ -1320,8 +1319,8 @@ Every section above has a management screen, with an image gallery, role-based p
 				alt: 'The coffee page showing grades and growing regions',
 				altAm: 'ደረጃዎችንና የማምረቻ ክልሎችን የሚያሳይ የቡና ገጽ',
 				caption:
-					'Products tie back to their region, sub-region and farm — the chain a buyer asks about.',
-				captionAm: 'ምርቶች ወደ ክልላቸው፣ ንዑስ ክልላቸውና እርሻቸው ይመለሳሉ — ገዢ የሚጠይቀው ሰንሰለት።'
+					'Products tie back to their region, sub-region and farm: the chain a buyer asks about.',
+				captionAm: 'ምርቶች ወደ ክልላቸው፣ ንዑስ ክልላቸውና እርሻቸው ይመለሳሉ፤ ገዢ የሚጠይቀው ሰንሰለት።'
 			},
 			{
 				image: shot('fahem-general-trading', 'ventures'),
@@ -1335,8 +1334,8 @@ Every section above has a management screen, with an image gallery, role-based p
 				alt: 'The about page with the company timeline',
 				altAm: 'ከኩባንያ የጊዜ ሰሌዳ ጋር የስለእኛ ገጽ',
 				caption:
-					'Milestones, value propositions and partners — three separate content types on one page.',
-				captionAm: 'ምዕራፎች፣ የእሴት አቅርቦቶችና አጋሮች — በአንድ ገጽ ላይ ሦስት የተለያዩ የይዘት ዓይነቶች።'
+					'Milestones, value propositions and partners: three separate content types on one page.',
+				captionAm: 'ምዕራፎች፣ የእሴት አቅርቦቶችና አጋሮች፤ በአንድ ገጽ ላይ ሦስት የተለያዩ የይዘት ዓይነቶች።'
 			},
 			{
 				image: shot('fahem-general-trading', 'contact'),
@@ -1356,9 +1355,9 @@ Every section above has a management screen, with an image gallery, role-based p
 		client: 'Lalo Group',
 		clientAm: 'ላሎ ግሩፕ',
 		summary:
-			'The parent company site for a group with several trading subsidiaries — built on the same editable content model as its sister sites, so the group page and the businesses under it stay in step.',
+			'The parent company site for a group with several trading subsidiaries, built on the same editable content model as its sister sites, so the group page and the businesses under it stay in step.',
 		summaryAm:
-			'በርካታ የንግድ ንዑስ ኩባንያዎች ላሉት ቡድን የተሠራ የእናት ኩባንያ ገጽ — ከእህት ገጾቹ ጋር በተመሳሳይ ሊስተካከል በሚችል የይዘት ሞዴል ላይ የተገነባ።',
+			'በርካታ የንግድ ንዑስ ኩባንያዎች ላሉት ቡድን የተሠራ የእናት ኩባንያ ገጽ፤ ከእህት ገጾቹ ጋር በተመሳሳይ ሊስተካከል በሚችል የይዘት ሞዴል ላይ የተገነባ።',
 		industry: 'Diversified trading group',
 		industryAm: 'የተለያየ ዘርፍ ያለው የንግድ ቡድን',
 		year: '2025',
@@ -1371,7 +1370,7 @@ Every section above has a management screen, with an image gallery, role-based p
 
 A holding company's website has an awkward job. It must say something meaningful about a group whose actual work happens in its subsidiaries, without either repeating those subsidiaries' sites or becoming a directory of links nobody clicks.
 
-The resolution here was to make the group site the place where the *shape* of the group is expressed — subsidiaries, markets, scale, history and partners — and let each business speak for itself elsewhere.
+The resolution here was to make the group site the place where the *shape* of the group is expressed (subsidiaries, markets, scale, history and partners), and let each business speak for itself elsewhere.
 
 ## What it holds
 
@@ -1379,7 +1378,7 @@ The resolution here was to make the group site the place where the *shape* of th
 
 **Coffee regions and export markets**, shared with the group's trading arm, so the same source data describes the same facts in both places.
 
-**Company stats and milestones** — the numbers and the timeline a buyer or a partner looks for.
+**Company stats and milestones**: the numbers and the timeline a buyer or a partner looks for.
 
 **Value propositions, partners, traceability, FAQs, testimonials and a gallery**, all managed the same way.
 
@@ -1387,12 +1386,12 @@ The resolution here was to make the group site the place where the *shape* of th
 
 ## Shared foundations
 
-This site and its sister sites were built from one set of decisions — the same content model, the same dashboard patterns, the same role and permission system, the same upload handling with browser-side image compression. That is deliberate. A group running several sites should not be paying to have the same admin screen designed five times, and the staff who move between them should not have to learn five interfaces.`,
+This site and its sister sites were built from one set of decisions: the same content model, the same dashboard patterns, the same role and permission system, the same upload handling with browser-side image compression. That is deliberate. A group running several sites should not be paying to have the same admin screen designed five times, and the staff who move between them should not have to learn five interfaces.`,
 		bodyAm: `## የቡድን ገጽ ችግር
 
 የይዞታ ኩባንያ ድረ-ገጽ አስቸጋሪ ሥራ አለው። እውነተኛ ሥራው በንዑስ ኩባንያዎቹ ውስጥ ስለሚከናወን ስለ ቡድኑ ትርጉም ያለው ነገር መናገር አለበት፤ ያለ የእነዚያን ገጾች መድገም ወይም ማንም የማይጫነው የአገናኝ ማውጫ መሆን።
 
-እዚህ ላይ የተገኘው መፍትሔ የቡድን ገጹን የቡድኑ *መዋቅር* የሚገለጽበት ቦታ ማድረግ ነበር — ንዑስ ኩባንያዎች፣ ገበያዎች፣ መጠን፣ ታሪክና አጋሮች — እያንዳንዱ ንግድ ደግሞ በሌላ ቦታ ስለራሱ እንዲናገር።
+እዚህ ላይ የተገኘው መፍትሔ የቡድን ገጹን የቡድኑ *መዋቅር* የሚገለጽበት ቦታ ማድረግ ነበር (ንዑስ ኩባንያዎች፣ ገበያዎች፣ መጠን፣ ታሪክና አጋሮች) እያንዳንዱ ንግድ ደግሞ በሌላ ቦታ ስለራሱ እንዲናገር።
 
 ## ምን ይይዛል
 
@@ -1400,7 +1399,7 @@ This site and its sister sites were built from one set of decisions — the same
 
 **የቡና ክልሎችና የወጪ ንግድ ገበያዎች**፣ ከቡድኑ የንግድ ክንፍ ጋር የሚጋሩ፤ ስለዚህ ተመሳሳዩ ምንጭ መረጃ በሁለቱም ቦታዎች ተመሳሳዮቹን እውነታዎች ይገልጻል።
 
-**የኩባንያ አኃዞችና ምዕራፎች** — ገዢ ወይም አጋር የሚፈልጋቸው ቁጥሮችና የጊዜ ሰሌዳ።
+**የኩባንያ አኃዞችና ምዕራፎች**፦ ገዢ ወይም አጋር የሚፈልጋቸው ቁጥሮችና የጊዜ ሰሌዳ።
 
 **የእሴት አቅርቦቶች፣ አጋሮች፣ ክትትል፣ ተደጋጋሚ ጥያቄዎች፣ ምስክርነቶችና ማዕከለ-ሥዕል**፣ ሁሉም በተመሳሳይ መንገድ የሚተዳደሩ።
 
@@ -1408,7 +1407,7 @@ This site and its sister sites were built from one set of decisions — the same
 
 ## የጋራ መሠረቶች
 
-ይህ ገጽና እህት ገጾቹ ከአንድ የውሳኔ ስብስብ ተገንብተዋል — ተመሳሳዩ የይዘት ሞዴል፣ ተመሳሳዮቹ የዳሽቦርድ ዘይቤዎች፣ ተመሳሳዩ የሚናና የፈቃድ ሥርዓት፣ ተመሳሳዩ የመጫን አያያዝ። ይህ ሆን ተብሎ ነው። በርካታ ገጾችን የሚያንቀሳቅስ ቡድን ተመሳሳዩ የአስተዳደር ገጽ አምስት ጊዜ እንዲነደፍ መክፈል የለበትም።`,
+ይህ ገጽና እህት ገጾቹ ከአንድ የውሳኔ ስብስብ ተገንብተዋል፦ ተመሳሳዩ የይዘት ሞዴል፣ ተመሳሳዮቹ የዳሽቦርድ ዘይቤዎች፣ ተመሳሳዩ የሚናና የፈቃድ ሥርዓት፣ ተመሳሳዩ የመጫን አያያዝ። ይህ ሆን ተብሎ ነው። በርካታ ገጾችን የሚያንቀሳቅስ ቡድን ተመሳሳዩ የአስተዳደር ገጽ አምስት ጊዜ እንዲነደፍ መክፈል የለበትም።`,
 		services: [
 			{ label: 'Group & subsidiary content model', labelAm: 'የቡድንና የንዑስ ኩባንያ የይዘት ሞዴል' },
 			{ label: 'Data-driven page sections', labelAm: 'በመረጃ የሚመሩ የገጽ ክፍሎች' },
@@ -1453,8 +1452,8 @@ This site and its sister sites were built from one set of decisions — the same
 				image: shot('lalo-group', 'about'),
 				alt: 'The about page with milestones and stats',
 				altAm: 'ከምዕራፎችና ከአኃዞች ጋር የስለእኛ ገጽ',
-				caption: 'Stats, milestones and partners — the credentials a group site exists to carry.',
-				captionAm: 'አኃዞች፣ ምዕራፎችና አጋሮች — የቡድን ገጽ ሊሸከማቸው የሚኖረው ማረጋገጫዎች።'
+				caption: 'Stats, milestones and partners: the credentials a group site exists to carry.',
+				captionAm: 'አኃዞች፣ ምዕራፎችና አጋሮች፤ የቡድን ገጽ ሊሸከማቸው የሚኖረው ማረጋገጫዎች።'
 			},
 			{
 				image: shot('lalo-group', 'contact'),
@@ -1493,13 +1492,13 @@ That changes what the site has to do. A procurement officer does not want to be 
 
 ## The catalogue
 
-Products with categories, images and **priced ranges** — the same model as the group's other trading site, because a tool sold in three pack sizes has three prices, and flattening that into one number is how a quote goes wrong.
+Products with categories, images and **priced ranges**: the same model as the group's other trading site, because a tool sold in three pack sizes has three prices, and flattening that into one number is how a quote goes wrong.
 
 **An industries page**, which is the segmentation that actually matters here: buyers arrive knowing their sector, not the manufacturer's product taxonomy. A **new arrivals** section keeps the returning buyer's visit worthwhile.
 
 ## Trade accounts
 
-Customers get real accounts — sign-up, sign-in, password reset, saved delivery addresses, an order history and a settings page. For a repeat trade buyer, order history is the feature: last quarter's order is next quarter's order.
+Customers get real accounts: sign-up, sign-in, password reset, saved delivery addresses, an order history and a settings page. For a repeat trade buyer, order history is the feature: last quarter's order is next quarter's order.
 
 ## The back office
 
@@ -1507,7 +1506,7 @@ Products, categories, suppliers and a stock ledger built from signed adjustments
 
 ## Shared foundations
 
-This is deliberately the same system as Lalo Bakery Solutions, wearing different clothes. Two trading businesses in one group with the same operational shape — catalogue, stock, orders, customers — should not be two codebases. What differs is the segmentation, the branding and the catalogue; what is shared is everything that would otherwise be built and debugged twice.`,
+This is deliberately the same system as Lalo Bakery Solutions, wearing different clothes. Two trading businesses in one group with the same operational shape (catalogue, stock, orders, customers) should not be two codebases. What differs is the segmentation, the branding and the catalogue; what is shared is everything that would otherwise be built and debugged twice.`,
 		bodyAm: `## መሣሪያዎችን ለንግዶች እንጂ ለተራ ተጠቃሚዎች አለመሸጥ
 
 ፊክስቴክ ለመሠረተ ልማት፣ ለኢንዱስትሪና ለስርጭት ሥራዎች ሙያዊ ደረጃ ያላቸውን ሜካኒካል መሣሪያዎችና የጅምላ አቅርቦት ያከፋፍላል። ደንበኛው ፕሮጀክትና የጊዜ ገደብ ያለው የግዥ ኃላፊ እንጂ የሚያስስ ሰው አይደለም።
@@ -1516,13 +1515,13 @@ This is deliberately the same system as Lalo Bakery Solutions, wearing different
 
 ## ካታሎጉ
 
-ምርቶች ከምድቦች፣ ከምስሎችና ከ**ዋጋ ካላቸው መጠኖች** ጋር — ከቡድኑ ሌላ የንግድ ገጽ ጋር ተመሳሳይ ሞዴል፤ ምክንያቱም በሦስት የማሸጊያ መጠኖች የሚሸጥ መሣሪያ ሦስት ዋጋ አለው፤ ያንን ወደ አንድ ቁጥር ማጠፍም ዋጋ የሚሳሳትበት መንገድ ነው።
+ምርቶች ከምድቦች፣ ከምስሎችና ከ**ዋጋ ካላቸው መጠኖች** ጋር፤ ከቡድኑ ሌላ የንግድ ገጽ ጋር ተመሳሳይ ሞዴል፤ ምክንያቱም በሦስት የማሸጊያ መጠኖች የሚሸጥ መሣሪያ ሦስት ዋጋ አለው፤ ያንን ወደ አንድ ቁጥር ማጠፍም ዋጋ የሚሳሳትበት መንገድ ነው።
 
 **የኢንዱስትሪዎች ገጽ**፣ እዚህ ላይ በእውነት አስፈላጊው ክፍፍል ይህ ነው፦ ገዢዎች የአምራቹን የምርት ምድብ ሳይሆን ዘርፋቸውን አውቀው ይመጣሉ። **አዲስ የገቡ** ክፍልም የተመላሽ ገዢን ጉብኝት ዋጋ ያለው ያደርገዋል።
 
 ## የንግድ መለያዎች
 
-ደንበኞች እውነተኛ መለያ ያገኛሉ — ምዝገባ፣ መግቢያ፣ የይለፍ ቃል ማደሻ፣ የተቀመጡ የማድረሻ አድራሻዎች፣ የትዕዛዝ ታሪክና የቅንብር ገጽ። ለተደጋጋሚ የንግድ ገዢ የትዕዛዝ ታሪክ ራሱ ጠቀሜታው ነው፦ የላለፈው ሩብ ዓመት ትዕዛዝ የሚቀጥለው ሩብ ዓመት ትዕዛዝ ነው።
+ደንበኞች እውነተኛ መለያ ያገኛሉ፦ ምዝገባ፣ መግቢያ፣ የይለፍ ቃል ማደሻ፣ የተቀመጡ የማድረሻ አድራሻዎች፣ የትዕዛዝ ታሪክና የቅንብር ገጽ። ለተደጋጋሚ የንግድ ገዢ የትዕዛዝ ታሪክ ራሱ ጠቀሜታው ነው፦ የላለፈው ሩብ ዓመት ትዕዛዝ የሚቀጥለው ሩብ ዓመት ትዕዛዝ ነው።
 
 ## የጀርባ ቢሮው
 
@@ -1530,7 +1529,7 @@ This is deliberately the same system as Lalo Bakery Solutions, wearing different
 
 ## የጋራ መሠረቶች
 
-ይህ ሆን ተብሎ ከላሎ ቤከሪ ሶሉሽንስ ጋር ተመሳሳይ ሥርዓት ነው፤ የተለየ ልብስ የለበሰ። ተመሳሳይ የሥራ መዋቅር ያላቸው በአንድ ቡድን ውስጥ ያሉ ሁለት የንግድ ድርጅቶች — ካታሎግ፣ ክምችት፣ ትዕዛዞች፣ ደንበኞች — ሁለት የተለያዩ ኮዶች መሆን የለባቸውም።`,
+ይህ ሆን ተብሎ ከላሎ ቤከሪ ሶሉሽንስ ጋር ተመሳሳይ ሥርዓት ነው፤ የተለየ ልብስ የለበሰ። ተመሳሳይ የሥራ መዋቅር ያላቸው በአንድ ቡድን ውስጥ ያሉ ሁለት የንግድ ድርጅቶች (ካታሎግ፣ ክምችት፣ ትዕዛዞች፣ ደንበኞች) ሁለት የተለያዩ ኮዶች መሆን የለባቸውም።`,
 		services: [
 			{ label: 'Industry-segmented B2B catalogue', labelAm: 'በኢንዱስትሪ የተከፋፈለ የንግድ ካታሎግ' },
 			{ label: 'Trade accounts & order history', labelAm: 'የንግድ መለያዎችና የትዕዛዝ ታሪክ' },
@@ -1552,7 +1551,7 @@ This is deliberately the same system as Lalo Bakery Solutions, wearing different
 			},
 			{
 				value: '3',
-				label: 'Ways to find a product — industry, category, new arrivals',
+				label: 'Ways to find a product: industry, category, new arrivals',
 				labelAm: 'ምርት ለማግኘት ሦስት መንገዶች'
 			}
 		],

@@ -1,4 +1,4 @@
-import { and, eq, ne } from 'drizzle-orm';
+import { and, asc, eq, ne } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { posts, projects } from '$lib/server/db/schema';
 import { deleteUploadedFile, saveUploadedFile } from '$lib/server/upload';
@@ -55,6 +55,48 @@ export async function replaceImage(
 	const stored = await saveUploadedFile(file);
 	if (current) await deleteUploadedFile(current).catch(() => {});
 	return stored;
+}
+
+/**
+ * Every case study, for a select that links a row to one.
+ *
+ * Drafts included, and in the dashboard's own order rather than the public
+ * one: a quote is very often entered while the case study it belongs to is
+ * still being written, and a list that hid those would be a list that omits
+ * exactly the project someone is working on.
+ */
+export async function listProjectOptions() {
+	return db
+		.select({ id: projects.id, name: projects.name, status: projects.status })
+		.from(projects)
+		.orderBy(asc(projects.sortOrder), asc(projects.id));
+}
+
+/**
+ * The project id a select posted, checked against the table.
+ *
+ * `""` is the "not linked" option and comes back as null. Anything else is
+ * verified to exist before it reaches the insert, because the column is a
+ * foreign key: a tampered value — or a project deleted in another tab since the
+ * form was opened — would otherwise arrive as a driver error with no field
+ * attached, on a form where the problem belongs beside the select. `undefined`
+ * means exactly that: an id was posted and there is no such project.
+ */
+export async function linkedProjectId(
+	value: string | undefined
+): Promise<number | null | undefined> {
+	if (!value) return null;
+
+	const id = Number(value);
+	if (!Number.isInteger(id) || id <= 0) return undefined;
+
+	const [row] = await db
+		.select({ id: projects.id })
+		.from(projects)
+		.where(eq(projects.id, id))
+		.limit(1);
+
+	return row ? id : undefined;
 }
 
 /** `undefined` and `""` both become `null`, which is what the columns mean. */

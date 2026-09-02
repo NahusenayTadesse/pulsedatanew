@@ -118,7 +118,7 @@ export function htmlToText(html: string) {
 			 * exactly the kind of thing only the plain-text alternative shows.
 			 */
 			.replace(/<\/(td|th)>\s*(?=<\/tr>)/gi, '')
-			.replace(/<\/(td|th)>/gi, ' — ')
+			.replace(/<\/(td|th)>/gi, ' | ')
 			.replace(/<\/(p|div|h[1-6]|li|blockquote|tr)>/gi, '\n\n')
 			.replace(/<br\s*\/?>/gi, '\n')
 			.replace(/<li[^>]*>/gi, '• ')
@@ -352,7 +352,7 @@ export function renderEmail(content: EmailContent): { html: string; text: string
 		content.button ? `${content.button.label}: ${content.button.href}` : '',
 		content.note,
 		'',
-		'—',
+		'---',
 		'Pulsedata Solutions · Complexity, Simplified.',
 		...(content.footer ?? []),
 		site
