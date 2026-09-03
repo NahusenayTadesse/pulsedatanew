@@ -29,7 +29,17 @@
 
 {#snippet author(row: Row)}
 	<div class="flex items-center gap-3">
-		{#if row.logo}
+		{#if row.photo}
+			<!-- The portrait wins the slot when there is one: this list is scanned
+			     for "which quote is that", and a face answers it faster than a mark. -->
+			<img
+				src={assetUrl(row.photo)}
+				alt=""
+				width="32"
+				height="32"
+				class="size-8 shrink-0 rounded-full border object-cover"
+			/>
+		{:else if row.logo}
 			<!-- Contained, not cropped: a logo is a shape, and `object-cover` would
 			     cut the ends off a wordmark. -->
 			<img

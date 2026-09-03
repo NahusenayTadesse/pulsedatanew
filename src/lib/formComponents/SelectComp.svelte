@@ -13,12 +13,16 @@
 	 * that component ports across with the same props.
 	 *
 	 * A hidden input carries the value so the field posts with a progressively
-	 * enhanced form even when JavaScript never loads.
+	 * enhanced form even when JavaScript never loads. `name` is optional for the
+	 * callers that do not post through a form field at all — a row in a repeater
+	 * whose rows are serialised as JSON, say — where a stray hidden input would
+	 * only add a duplicate key to the payload.
 	 */
 	let {
 		value = $bindable(),
 		items,
-		name,
+		name = undefined,
+		onValueChange = undefined,
 		id = undefined,
 		placeholder = '',
 		required = false,
@@ -29,7 +33,9 @@
 	}: {
 		value?: string;
 		items: Item[];
-		name: string;
+		name?: string;
+		/** Runs after `value` is written, for callers that react to a change. */
+		onValueChange?: (value: string) => void;
 		id?: string;
 		placeholder?: string;
 		required?: boolean;
@@ -43,7 +49,7 @@
 	const selected = $derived(items.find((item) => item.value === value));
 </script>
 
-<Select.Root type="single" bind:value {name} {disabled}>
+<Select.Root type="single" bind:value {name} {disabled} {onValueChange}>
 	<!--
 		`role="combobox"` rather than the button role bits-ui gives the trigger.
 		This is a select-only combobox in ARIA 1.2 terms, and it is the role that

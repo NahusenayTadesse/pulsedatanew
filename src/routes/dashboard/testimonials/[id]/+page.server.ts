@@ -23,10 +23,11 @@ export const load: PageServerLoad = async ({ params }) => {
 	const quote = await readTestimonial(id);
 	if (!quote) error(404);
 
-	// The stored logo is a filename and the schema's field is a `File`; feeding
-	// the string to `z.instanceof(File)` opens the page with an error against a
-	// field nobody touched. It is passed separately, for the preview.
-	const { logo: _logo, ...rest } = quote;
+	// The stored logo and photo are filenames and the schema's fields are
+	// `File`s; feeding a string to `z.instanceof(File)` opens the page with an
+	// error against a field nobody touched. Both are passed separately, for the
+	// previews.
+	const { logo: _logo, photo: _photo, ...rest } = quote;
 
 	const form = await superValidate(
 		{
@@ -39,6 +40,8 @@ export const load: PageServerLoad = async ({ params }) => {
 			companyAm: quote.companyAm ?? '',
 			logoAlt: quote.logoAlt ?? '',
 			logoAltAm: quote.logoAltAm ?? '',
+			photoAlt: quote.photoAlt ?? '',
+			photoAltAm: quote.photoAltAm ?? '',
 			// The select's values are strings; a number here matches no option and
 			// the field would open showing the placeholder over a real link.
 			projectId: quote.projectId ? String(quote.projectId) : ''
@@ -49,6 +52,7 @@ export const load: PageServerLoad = async ({ params }) => {
 	return {
 		form,
 		logo: quote.logo,
+		photo: quote.photo,
 		authorName: quote.authorName,
 		projects: await listProjectOptions()
 	};
@@ -68,7 +72,10 @@ export const actions: Actions = {
 			return setError(form, 'projectId', m.dash_project_gone());
 		}
 
-		const logo = await replaceImage(form.data.logo, existing.logo);
+		const [logo, photo] = await Promise.all([
+			replaceImage(form.data.logo, existing.logo),
+			replaceImage(form.data.photo, existing.photo)
+		]);
 
 		await db
 			.update(testimonials)
@@ -84,6 +91,9 @@ export const actions: Actions = {
 				logo,
 				logoAlt: orNull(form.data.logoAlt),
 				logoAltAm: orNull(form.data.logoAltAm),
+				photo,
+				photoAlt: orNull(form.data.photoAlt),
+				photoAltAm: orNull(form.data.photoAltAm),
 				projectId,
 				status: form.data.status,
 				sortOrder: form.data.sortOrder
@@ -101,8 +111,9 @@ export const actions: Actions = {
 		await db.delete(testimonials).where(eq(testimonials.id, id));
 
 		// After the row, never before, as everywhere else here: a quote that still
-		// exists but has lost its logo is worse than one orphaned file.
+		// exists but has lost its pictures is worse than two orphaned files.
 		if (existing.logo) await deleteUploadedFile(existing.logo).catch(() => {});
+		if (existing.photo) await deleteUploadedFile(existing.photo).catch(() => {});
 
 		redirect(303, localizeHref('/dashboard/testimonials'));
 	}

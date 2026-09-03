@@ -67,6 +67,27 @@ const optionalImage = z
 	.optional();
 
 /**
+ * An optional web address.
+ *
+ * Preprocessed rather than written as `.url().optional().or(z.literal(''))`.
+ * That union is what an empty text input actually posts, but Superforms cannot
+ * parse a union out of FormData unless the whole form is submitted as JSON — it
+ * throws "Unions are only supported when the dataType option is set to json"
+ * and the action 500s. Normalising the empty string to `undefined` before
+ * validation keeps the schema a plain optional string.
+ */
+const optionalUrl = (max = 500) =>
+	z.preprocess(
+		(value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+		z
+			.string()
+			.trim()
+			.max(max)
+			.url('That is not a complete web address. Include https://.')
+			.optional()
+	);
+
+/**
  * A date from an `<input type="date">`, which posts `""` or `YYYY-MM-DD`.
  *
  * Parsed here rather than in the action so an unparseable value is a field
@@ -159,16 +180,7 @@ export function projectSchema() {
 			.transform((value) => value || undefined)
 			.optional(),
 
-		/** Same shape as `readingMinutes` above, and for the same reason. */
-		websiteUrl: z.preprocess(
-			(value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
-			z
-				.string()
-				.trim()
-				.max(500)
-				.url('That is not a complete web address. Include https://.')
-				.optional()
-		),
+		websiteUrl: optionalUrl(),
 
 		coverImageAlt: optionalText(255),
 		coverImageAltAm: optionalText(255),
@@ -199,6 +211,63 @@ export function projectSchema() {
 	});
 }
 
+/**
+ * A list of social profiles — a person's, or the company's.
+ *
+ * Rows are checked one at a time in `superRefine` rather than by typing `url`
+ * as `z.string().url()`, because the repeater always renders a blank row to
+ * type into — a plain `.url()` would fail the whole form on a row nobody
+ * touched. A row with no address is dropped by the action; a row with one has
+ * to be a real address.
+ *
+ * Shared by `teamSchema` and `companyLinksSchema` so the two cannot drift:
+ * both are edited by the same repeater and written by the same replace-the-lot
+ * helper, and a rule that held for a bio's links but not the footer's would be
+ * a bug nobody would find until a broken icon shipped.
+ */
+function socialLinks() {
+	return z
+		.array(
+			z.object({
+				platform: z.enum(socialPlatforms),
+				url: z.string().trim().max(500)
+			})
+		)
+		.default([])
+		.superRefine((rows, ctx) => {
+			rows.forEach((row, index) => {
+				if (!row.url) return;
+
+				const ok =
+					row.platform === 'email'
+						? z.email().safeParse(row.url).success
+						: z.url().safeParse(row.url).success;
+
+				if (!ok) {
+					ctx.addIssue({
+						code: 'custom',
+						path: [index, 'url'],
+						message:
+							row.platform === 'email'
+								? 'That is not an email address.'
+								: 'That is not a complete web address. Include https://.'
+					});
+				}
+			});
+		});
+}
+
+/**
+ * The company's own profiles, as the one field of the socials screen.
+ *
+ * A form with a single array in it, rather than the array on its own, because
+ * Superforms binds a form to an object and the dashboard's repeater reads
+ * `$form.links` exactly as the team form's does.
+ */
+export function companyLinksSchema() {
+	return z.object({ links: socialLinks() });
+}
+
 export function teamSchema() {
 	return z.object({
 		status,
@@ -215,44 +284,8 @@ export function teamSchema() {
 		photoAlt: optionalText(255),
 		photoAltAm: optionalText(255),
 
-		/**
-		 * The social profiles.
-		 *
-		 * Rows are checked one at a time in `superRefine` rather than by typing
-		 * `url` as `z.string().url()`, because the repeater always renders a blank
-		 * row to type into — a plain `.url()` would fail the whole form on a row
-		 * nobody touched. A row with no address is dropped by the action; a row
-		 * with one has to be a real address.
-		 */
-		links: z
-			.array(
-				z.object({
-					platform: z.enum(socialPlatforms),
-					url: z.string().trim().max(500)
-				})
-			)
-			.default([])
-			.superRefine((rows, ctx) => {
-				rows.forEach((row, index) => {
-					if (!row.url) return;
-
-					const ok =
-						row.platform === 'email'
-							? z.email().safeParse(row.url).success
-							: z.url().safeParse(row.url).success;
-
-					if (!ok) {
-						ctx.addIssue({
-							code: 'custom',
-							path: [index, 'url'],
-							message:
-								row.platform === 'email'
-									? 'That is not an email address.'
-									: 'That is not a complete web address. Include https://.'
-						});
-					}
-				});
-			}),
+		/** The social profiles. See `socialLinks()`. */
+		links: socialLinks(),
 
 		id: z.coerce.number().int().positive().optional()
 	});
@@ -284,6 +317,11 @@ export function testimonialSchema() {
 		logoAlt: optionalText(255),
 		logoAltAm: optionalText(255),
 
+		/** The portrait. Optional for the same reason the logo is. */
+		photo: optionalImage,
+		photoAlt: optionalText(255),
+		photoAltAm: optionalText(255),
+
 		/**
 		 * The case study this quote belongs to, or `""` for none.
 		 *
@@ -299,7 +337,44 @@ export function testimonialSchema() {
 	});
 }
 
+/**
+ * A client whose mark appears in the "trusted by" band.
+ *
+ * The logo is the point of the row, but it is `optionalImage` here rather than
+ * a required one, because an untouched file input on the *edit* form posts an
+ * empty `File` meaning "keep the current logo" — requiring it in the schema
+ * would make every edit fail until the logo was re-uploaded. The create action
+ * checks that a file actually arrived and puts the error on the field; the edit
+ * action does not need to, since the row cannot exist without one.
+ */
+export function clientSchema() {
+	return z.object({
+		status,
+		sortOrder: z.coerce.number().int().min(0).max(9999).default(0),
+
+		name: z.string().trim().min(1, 'A client name is required.').max(200),
+		nameAm: optionalText(200),
+
+		logo: optionalImage,
+		logoAlt: optionalText(255),
+		logoAltAm: optionalText(255),
+
+		note: optionalText(255),
+		noteAm: optionalText(255),
+
+		websiteUrl: optionalUrl(),
+
+		/** The case study about this client, or `""` for none. See `testimonialSchema`. */
+		projectId: z.string().trim().max(20).default(''),
+
+		id: z.coerce.number().int().positive().optional()
+	});
+}
+
+export type ClientInput = z.infer<ReturnType<typeof clientSchema>>;
+
 export type TeamInput = z.infer<ReturnType<typeof teamSchema>>;
+export type CompanyLinksInput = z.infer<ReturnType<typeof companyLinksSchema>>;
 export type TestimonialInput = z.infer<ReturnType<typeof testimonialSchema>>;
 
 export type PostInput = z.infer<ReturnType<typeof postSchema>>;

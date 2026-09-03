@@ -26,4 +26,11 @@ export const CONTACT = {
 /** The canonical origin, for `og:` tags and the sitemap. */
 export const SITE_URL = 'https://pulsedataet.com';
 
-export const SOCIAL: { label: string; href: string }[] = [];
+/*
+ * The social profiles are *not* here.
+ *
+ * They started as a constant in this file and moved to the `company_links`
+ * table, edited at /dashboard/socials, for the same reason the team did: an
+ * account that opens should not need a deploy. The footer reads them from the
+ * `(site)` layout's load; the home page's `sameAs` reads the same list.
+ */

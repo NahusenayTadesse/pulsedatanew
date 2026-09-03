@@ -7,7 +7,7 @@
 	import Seo from '$lib/components/site/Seo.svelte';
 	import * as m from '$lib/paraglide/messages';
 
-	let { children } = $props();
+	let { children, data } = $props();
 
 	/*
 	 * This layout is the public site's chrome and nothing else uses it. The
@@ -60,5 +60,5 @@
 	<main id="main" class="flex-1" lang={getLocale()}>
 		{@render children()}
 	</main>
-	<Footer />
+	<Footer links={data.companyLinks} />
 </div>

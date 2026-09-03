@@ -21,6 +21,7 @@ export const load: PageServerLoad = async () => ({
 			company: testimonials.company,
 			companyAm: testimonials.companyAm,
 			logo: testimonials.logo,
+			photo: testimonials.photo,
 			/*
 			 * A left join, not an inner one: most quotes are not tied to a case
 			 * study, and an inner join would quietly drop every one of them from

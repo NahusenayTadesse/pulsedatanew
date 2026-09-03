@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { ArrowLeft, Building2, Download, Mail, Phone } from '@lucide/svelte';
+	import { tick } from 'svelte';
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import EnquiryStatus from '$lib/components/admin/EnquiryStatus.svelte';
 	import MailKind from '$lib/components/admin/MailKind.svelte';
 	import EmailComposer from '$lib/components/admin/EmailComposer.svelte';
+	import SelectComp from '$lib/formComponents/SelectComp.svelte';
 	import { replySchema } from '$lib/forms/mail';
 	import { formatDateTime } from '$lib/components/admin/format';
 	import { localizeHref } from '$lib/paraglide/runtime';
@@ -31,6 +33,13 @@
 		replied: m.dash_enquiry_replied,
 		archived: m.dash_enquiry_archived
 	};
+
+	const statusItems = $derived(
+		statuses.map((option) => ({ value: option, name: statusLabels[option]() }))
+	);
+
+	/** Held so the dropdown, which is a button and not a form control, can post. */
+	let statusForm = $state<HTMLFormElement | null>(null);
 
 	/**
 	 * A prefilled reply, opened in whatever the reader uses for mail.
@@ -204,20 +213,30 @@
 	</section>
 
 	<div class="flex flex-wrap items-center gap-3 border-t pt-6">
-		<form method="POST" action="?/status" use:enhance class="ms-auto flex items-center gap-2">
+		<form
+			method="POST"
+			action="?/status"
+			use:enhance
+			bind:this={statusForm}
+			class="ms-auto flex items-center gap-2"
+		>
 			<label for="status" class="text-xs text-muted-foreground">{m.dash_enquiry_mark()}</label>
-			<select
+			<SelectComp
 				id="status"
 				name="status"
+				items={statusItems}
 				value={enquiry.status}
-				onchange={(event) => event.currentTarget.form?.requestSubmit()}
-				class="h-9 rounded-md border border-input bg-transparent px-3 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-			>
-				{#each statuses as option (option)}
-					<option value={option}>{statusLabels[option]()}</option>
-				{/each}
-			</select>
-			<!-- Submits on change with JS; this is what makes it work without. -->
+				onValueChange={async () => {
+					// The hidden input that carries the value is written on the next
+					// flush; submitting before it lands would post the old status.
+					await tick();
+					statusForm?.requestSubmit();
+				}}
+				triggerClass="w-40"
+			/>
+			<!-- Submits on change with JS; this is what makes it work without. The
+			     dropdown itself needs JS, so without it the button posts whatever
+			     status the record already has — harmless, and the page still reads. -->
 			<noscript><Button type="submit" size="sm">{m.dash_save()}</Button></noscript>
 		</form>
 	</div>

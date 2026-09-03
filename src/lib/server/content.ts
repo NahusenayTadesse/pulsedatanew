@@ -1,6 +1,8 @@
 import { and, asc, desc, eq, inArray, lte, ne, or, sql } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import {
+	clients,
+	companyLinks,
 	posts,
 	projects,
 	projectImages,
@@ -124,6 +126,43 @@ export async function listProjects(limit?: number) {
 }
 
 /**
+ * Every published case study, each with the modules it delivered attached.
+ *
+ * The index filters by module, and filtering by one means having them — the
+ * card query alone cannot answer "show me the payroll deployments". Two queries
+ * and a group rather than a join, exactly as `listTeam` does it: a join repeats
+ * every summary once per module and then has to be un-repeated in JavaScript
+ * anyway, over a set that is a few dozen rows at most.
+ */
+export async function listProjectsWithServices() {
+	const rows = await db
+		.select(projectCard)
+		.from(projects)
+		.where(isLive(projects))
+		.orderBy(desc(projects.featured), asc(projects.sortOrder), desc(projects.year));
+
+	if (!rows.length) return [];
+
+	const services = await db
+		.select()
+		.from(projectServices)
+		.where(
+			inArray(
+				projectServices.projectId,
+				rows.map((row) => row.id)
+			)
+		)
+		.orderBy(asc(projectServices.sortOrder), asc(projectServices.id));
+
+	return rows.map((row) => ({
+		...row,
+		services: services.filter((service) => service.projectId === row.id)
+	}));
+}
+
+export type ProjectIndexCard = Awaited<ReturnType<typeof listProjectsWithServices>>[number];
+
+/**
  * A case study with everything its page renders.
  *
  * The three child lists are fetched together rather than sequentially: they do
@@ -230,6 +269,19 @@ export async function listTeam() {
 }
 
 /**
+ * The company's own social profiles, in the order the dashboard put them.
+ *
+ * No status column: a link is either in the list or it is not. The footer draws
+ * nothing when this comes back empty, which is the state the site ships in.
+ */
+export async function listCompanyLinks() {
+	return db
+		.select({ id: companyLinks.id, platform: companyLinks.platform, url: companyLinks.url })
+		.from(companyLinks)
+		.orderBy(asc(companyLinks.sortOrder), asc(companyLinks.id));
+}
+
+/**
  * The published testimonials, in the order the dashboard put them.
  *
  * No `published_at`: a quote is not scheduled, it is either shown or it is not,
@@ -248,7 +300,10 @@ const testimonialCard = {
 	companyAm: testimonials.companyAm,
 	logo: testimonials.logo,
 	logoAlt: testimonials.logoAlt,
-	logoAltAm: testimonials.logoAltAm
+	logoAltAm: testimonials.logoAltAm,
+	photo: testimonials.photo,
+	photoAlt: testimonials.photoAlt,
+	photoAltAm: testimonials.photoAltAm
 };
 
 export async function listTestimonials(limit?: number) {
@@ -262,6 +317,41 @@ export async function listTestimonials(limit?: number) {
 }
 
 export type TestimonialCard = Awaited<ReturnType<typeof listTestimonials>>[number];
+
+/**
+ * The published client logos, in the order the dashboard put them.
+ *
+ * No `published_at` and no `isLive`, for the same reason testimonials have
+ * neither: a logo is shown or it is not, and there is nothing to schedule.
+ *
+ * The case study's slug comes along on a left join so the band can link a mark
+ * to the work rather than to the client's own site — a reader who clicks a logo
+ * on our page is asking what we did for them. The join is left, not inner,
+ * because most clients have no case study and an inner one would drop exactly
+ * the rows this band exists to show.
+ */
+export async function listClients() {
+	return db
+		.select({
+			id: clients.id,
+			name: clients.name,
+			nameAm: clients.nameAm,
+			logo: clients.logo,
+			logoAlt: clients.logoAlt,
+			logoAltAm: clients.logoAltAm,
+			note: clients.note,
+			noteAm: clients.noteAm,
+			websiteUrl: clients.websiteUrl,
+			projectSlug: projects.slug,
+			projectStatus: projects.status
+		})
+		.from(clients)
+		.leftJoin(projects, eq(clients.projectId, projects.id))
+		.where(eq(clients.status, 'published'))
+		.orderBy(asc(clients.sortOrder), asc(clients.id));
+}
+
+export type ClientLogo = Awaited<ReturnType<typeof listClients>>[number];
 
 export type TeamCard = Awaited<ReturnType<typeof listTeam>>[number];
 

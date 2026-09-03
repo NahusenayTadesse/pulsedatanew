@@ -4,15 +4,12 @@
 	import { zod4Client } from 'sveltekit-superforms/adapters';
 	import { toast } from 'svelte-sonner';
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Input } from '$lib/components/ui/input/index.js';
 	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
 	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import Errors from '$lib/formComponents/Errors.svelte';
 	import BilingualField from '$lib/components/admin/BilingualField.svelte';
-	import Repeater from '$lib/components/admin/Repeater.svelte';
-	import SocialIcon from '$lib/components/site/SocialIcon.svelte';
+	import SocialLinks from '$lib/components/admin/SocialLinks.svelte';
 	import { teamSchema } from '$lib/forms/admin';
-	import { PLATFORM_LABELS, socialPlatforms, type SocialPlatform } from '$lib/social';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import * as m from '$lib/paraglide/messages';
 
@@ -59,29 +56,6 @@
 			if (result.message) toast.success(result.message);
 		}
 	});
-
-	const platformItems = socialPlatforms.map((platform) => ({
-		value: platform,
-		name: PLATFORM_LABELS[platform]
-	}));
-
-	/**
-	 * The placeholder shows the shape the field wants, which is the whole of the
-	 * guidance most of these need: an address for email, a full URL otherwise.
-	 */
-	const placeholderFor = (platform: SocialPlatform) =>
-		platform === 'email' ? 'name@pulsedataet.com' : 'https://';
-
-	/**
-	 * The messages for one row's address.
-	 *
-	 * Superforms types `$errors` as a recursive mapped type over the schema,
-	 * which does not narrow to "an array of objects with a `url`" — so the one
-	 * entry this form reads is cast here rather than fighting the type at every
-	 * use, exactly as `FieldErrors` does for the flat fields.
-	 */
-	const linkErrors = (index: number): string[] =>
-		(($errors.links as { url?: string[] }[] | undefined)?.[index]?.url ?? []) as string[];
 </script>
 
 <form method="POST" action="?/save" enctype="multipart/form-data" use:enhance class="space-y-8">
@@ -125,50 +99,13 @@
 				errors={$errors}
 			/>
 
-			<Repeater
+			<SocialLinks
+				bind:rows={$form.links}
+				errors={$errors.links}
 				label={m.dash_socials()}
 				hint={m.dash_socials_hint()}
-				bind:rows={$form.links}
-				blank={() => ({ platform: 'linkedin' as SocialPlatform, url: '' })}
-				isBlank={(link) => !link.url.trim()}
-			>
-				{#snippet row(link, set, index)}
-					<div class="grid gap-2 sm:grid-cols-[10rem_1fr]">
-						<label class="flex items-center gap-2">
-							<span class="sr-only">{m.dash_socials_platform()}</span>
-							<!-- A native select, not the styled `SelectComp`: that one posts
-							     through a hidden input tied to a field name, and these rows
-							     are posted as JSON by index. -->
-							<span
-								class="inline-flex size-9 shrink-0 items-center justify-center rounded-md border text-muted-foreground"
-							>
-								<SocialIcon platform={link.platform as SocialPlatform} />
-							</span>
-							<select
-								value={link.platform}
-								onchange={(event) => set({ platform: event.currentTarget.value as SocialPlatform })}
-								class="h-9 min-w-0 flex-1 rounded-md border bg-transparent px-2 text-sm"
-							>
-								{#each platformItems as item (item.value)}
-									<option value={item.value}>{item.name}</option>
-								{/each}
-							</select>
-						</label>
-
-						<div>
-							<Input
-								placeholder={placeholderFor(link.platform as SocialPlatform)}
-								value={link.url}
-								oninput={(event) => set({ url: event.currentTarget.value })}
-								aria-label={PLATFORM_LABELS[link.platform as SocialPlatform]}
-							/>
-							{#each linkErrors(index) as error (error)}
-								<p class="mt-1 text-xs text-destructive">{error}</p>
-							{/each}
-						</div>
-					</div>
-				{/snippet}
-			</Repeater>
+				idPrefix="member-link"
+			/>
 		</div>
 
 		<aside class="space-y-6 lg:sticky lg:top-20">

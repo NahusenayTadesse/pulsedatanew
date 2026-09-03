@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import {
+		BadgeCheck,
 		Briefcase,
 		ExternalLink,
 		FileText,
@@ -11,6 +12,7 @@
 		Menu,
 		Quote,
 		Send,
+		Share2,
 		Users
 	} from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button/index.js';
@@ -31,6 +33,8 @@
 		{ href: '/dashboard/blogs', label: m.dash_blogs(), icon: FileText },
 		{ href: '/dashboard/team', label: m.dash_team(), icon: Users },
 		{ href: '/dashboard/testimonials', label: m.dash_testimonials(), icon: Quote },
+		{ href: '/dashboard/clients', label: m.dash_clients(), icon: BadgeCheck },
+		{ href: '/dashboard/socials', label: m.dash_company_socials(), icon: Share2 },
 		{
 			href: '/dashboard/enquiries',
 			label: m.dash_enquiries(),

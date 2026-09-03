@@ -5,6 +5,7 @@
 	import Section from '$lib/components/site/Section.svelte';
 	import CtaBand from '$lib/components/site/CtaBand.svelte';
 	import RecordFlow from '$lib/components/site/RecordFlow.svelte';
+	import ClientMarquee from '$lib/components/site/ClientMarquee.svelte';
 	import HeroField from '$lib/components/site/HeroField.svelte';
 	import ProjectCard from '$lib/components/site/ProjectCard.svelte';
 	import PostCard from '$lib/components/site/PostCard.svelte';
@@ -12,7 +13,8 @@
 	import { reveal, stagger } from '$lib/actions/reveal';
 	import { OG_IMAGE } from '$lib/seo';
 	import JsonLd from '$lib/components/site/JsonLd.svelte';
-	import { CONTACT, SITE_URL, SOCIAL } from '$lib/site';
+	import { CONTACT, SITE_URL } from '$lib/site';
+	import { socialHref, type SocialPlatform } from '$lib/social';
 	import * as m from '$lib/paraglide/messages';
 
 	let { data } = $props();
@@ -30,6 +32,12 @@
 	 * because it asserts something false about a business people are deciding
 	 * whether to trust.
 	 */
+	const sameAs = $derived(
+		data.companyLinks
+			.filter((link) => link.platform !== 'email')
+			.map((link) => socialHref(link.platform as SocialPlatform, link.url))
+	);
+
 	const organisation = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'Organization',
@@ -50,7 +58,11 @@
 		// The E.164 form, not the printed one: `telephone` here is read by
 		// machines, and a local `09…` number is unusable from outside Ethiopia.
 		...(CONTACT.phoneHref ? { telephone: CONTACT.phoneHref } : {}),
-		...(SOCIAL.length ? { sameAs: SOCIAL.map((link) => link.href) } : {})
+		// `sameAs` is the same list the footer draws, from `company_links` by way
+		// of the layout's load. Dropped entirely when empty rather than emitted as
+		// `[]`, for the reason above: an empty array asserts "this company has no
+		// other profiles", which is a claim, not a blank.
+		...(sameAs.length ? { sameAs } : {})
 	});
 
 	/**
@@ -210,6 +222,21 @@
 		<RecordFlow />
 	</div>
 </section>
+
+<!--
+	Who already runs on it.
+
+	Directly under the diagram and above the modules, which is the earliest point
+	it can go: the hero makes a claim, the diagram explains it, and this is the
+	evidence — a reader deciding whether to keep scrolling has it before the
+	feature list rather than after three screens of one.
+
+	Absent entirely when there are no published clients. A "trusted by" heading
+	over an empty row is worse than no band at all.
+-->
+{#if data.clients.length}
+	<ClientMarquee clients={data.clients} />
+{/if}
 
 <!-- The nine modules -->
 <Section

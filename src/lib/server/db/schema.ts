@@ -308,6 +308,31 @@ export const teamMemberLinks = mysqlTable(
 );
 
 /**
+ * The company's own social profiles.
+ *
+ * The same shape as `team_member_links` and for the same reasons — a row per
+ * link, `platform` an enum so every value has an icon — minus the owner: there
+ * is one company, so there is nothing to point the foreign key at. Kept as its
+ * own table rather than a settings row holding JSON, because the ordering and
+ * the enum are the whole value here and JSON in a column gives up both.
+ *
+ * Empty is the honest default. The footer draws this list only when it has
+ * something in it, so a site with no accounts yet shows no icons rather than a
+ * row of links to pages that do not exist.
+ */
+export const companyLinks = mysqlTable(
+	'company_links',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+		platform: mysqlEnum('platform', socialPlatforms).notNull(),
+		/** A full URL, or a bare address when `platform` is `email`. */
+		url: varchar('url', { length: 500 }).notNull(),
+		sortOrder: int('sort_order').notNull().default(0)
+	},
+	(table) => [index('company_links_sort_idx').on(table.sortOrder)]
+);
+
+/**
  * What a client said about the work.
  *
  * A quote is not a case study and does not want to be one: it has no page, no
@@ -350,6 +375,19 @@ export const testimonials = mysqlTable(
 		logoAltAm: varchar('logo_alt_am', { length: 255 }),
 
 		/**
+		 * A photograph of the person who said it. A `/files/:name` filename.
+		 *
+		 * Separate from the logo and not a substitute for it: the logo says which
+		 * company stands behind the words, the portrait says a specific person
+		 * did. A quote carrying both is the most persuasive thing on the site, and
+		 * either one alone still works — the card lays out around whichever it has.
+		 */
+		photo: varchar('photo', { length: 255 }),
+		/** Nullable; the card falls back to the author's name, as the team's does. */
+		photoAlt: varchar('photo_alt', { length: 255 }),
+		photoAltAm: varchar('photo_alt_am', { length: 255 }),
+
+		/**
 		 * The case study this quote belongs to, when it belongs to one.
 		 *
 		 * `set null` rather than `cascade`: a client's words are still true after
@@ -374,6 +412,77 @@ export const testimonials = mysqlTable(
 	(table) => [
 		index('testimonials_status_sort_idx').on(table.status, table.sortOrder),
 		index('testimonials_project_idx').on(table.projectId)
+	]
+);
+
+// ---------------------------------------------------------------------------
+// Clients
+// ---------------------------------------------------------------------------
+
+/**
+ * The companies whose marks appear in the "trusted by" band.
+ *
+ * Its own table rather than a flag on `projects`, because the two lists answer
+ * different questions and rarely hold the same rows. A case study is work we
+ * can describe in public and there will only ever be a handful; a client logo
+ * is permission to show a mark, which is far cheaper to obtain and worth having
+ * twenty of. Most clients never become a case study, and a case study whose
+ * client would rather not be named still needs to exist.
+ *
+ * `logo` is the one required field beyond the name. A row in this table exists
+ * to put a mark on the page — a client with no logo has nothing to contribute
+ * to a logo band, and the honest place for their name is a case study.
+ */
+export const clients = mysqlTable(
+	'clients',
+	{
+		id: int('id', { unsigned: true }).autoincrement().primaryKey(),
+
+		name: varchar('name', { length: 200 }).notNull(),
+		nameAm: varchar('name_am', { length: 200 }),
+
+		/** A `/files/:name` filename, as every other upload is. Required. */
+		logo: varchar('logo', { length: 255 }).notNull(),
+		/**
+		 * Alt text for the mark.
+		 *
+		 * Nullable, and the band falls back to the client's name — which is the
+		 * whole of what a logo's alt text should ever say.
+		 */
+		logoAlt: varchar('logo_alt', { length: 255 }),
+		logoAltAm: varchar('logo_alt_am', { length: 255 }),
+
+		/** One line, shown on hover and to a screen reader. "Since 2024", a sector. */
+		note: varchar('note', { length: 255 }),
+		noteAm: varchar('note_am', { length: 255 }),
+
+		/** The client's own site. Turns the mark into a link when present. */
+		websiteUrl: varchar('website_url', { length: 500 }),
+
+		/**
+		 * The case study about this client, when there is one.
+		 *
+		 * `set null` for the reason the testimonial's is: withdrawing a case study
+		 * does not withdraw permission to show the mark. When set, the band links
+		 * to the case study in preference to the client's own site — a reader who
+		 * clicks a logo on our page is asking what we did for them.
+		 */
+		projectId: int('project_id', { unsigned: true }).references(() => projects.id, {
+			onDelete: 'set null'
+		}),
+
+		status: mysqlEnum('status', publishStatus).notNull().default('draft'),
+		sortOrder: int('sort_order').notNull().default(0),
+
+		createdAt: timestamp('created_at').notNull().defaultNow(),
+		updatedAt: timestamp('updated_at')
+			.notNull()
+			.defaultNow()
+			.$onUpdate(() => new Date())
+	},
+	(table) => [
+		index('clients_status_sort_idx').on(table.status, table.sortOrder),
+		index('clients_project_idx').on(table.projectId)
 	]
 );
 
@@ -620,6 +729,10 @@ export const testimonialsRelations = relations(testimonials, ({ one }) => ({
 	project: one(projects, { fields: [testimonials.projectId], references: [projects.id] })
 }));
 
+export const clientsRelations = relations(clients, ({ one }) => ({
+	project: one(projects, { fields: [clients.projectId], references: [projects.id] })
+}));
+
 export type Post = typeof posts.$inferSelect;
 export type Project = typeof projects.$inferSelect;
 export type ProjectService = typeof projectServices.$inferSelect;
@@ -629,4 +742,6 @@ export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type SentEmail = typeof sentEmails.$inferSelect;
 export type TeamMember = typeof teamMembers.$inferSelect;
 export type TeamMemberLink = typeof teamMemberLinks.$inferSelect;
+export type CompanyLink = typeof companyLinks.$inferSelect;
 export type Testimonial = typeof testimonials.$inferSelect;
+export type Client = typeof clients.$inferSelect;

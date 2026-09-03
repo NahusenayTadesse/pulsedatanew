@@ -28,7 +28,10 @@ export const actions: Actions = {
 			return setError(form, 'projectId', m.dash_project_gone());
 		}
 
-		const logo = await replaceImage(form.data.logo, null);
+		const [logo, photo] = await Promise.all([
+			replaceImage(form.data.logo, null),
+			replaceImage(form.data.photo, null)
+		]);
 
 		const [result] = await db.insert(testimonials).values({
 			quote: form.data.quote,
@@ -42,6 +45,9 @@ export const actions: Actions = {
 			logo,
 			logoAlt: orNull(form.data.logoAlt),
 			logoAltAm: orNull(form.data.logoAltAm),
+			photo,
+			photoAlt: orNull(form.data.photoAlt),
+			photoAltAm: orNull(form.data.photoAltAm),
 			projectId,
 			status: form.data.status,
 			sortOrder: form.data.sortOrder

@@ -1,9 +1,17 @@
 import { listPosts } from '$lib/server/content';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const posts = await listPosts();
-	// The lead article: whichever is flagged, else the most recent.
-	const [lead, ...rest] = [...posts].sort((a, b) => Number(b.featured) - Number(a.featured));
-	return { lead: lead ?? null, rest };
-};
+/**
+ * Every published post, in one read.
+ *
+ * The lead article used to be split out here. It is chosen on the page now,
+ * because the page also filters: once a reader has typed a search or picked a
+ * topic there is no "lead" any more, only results, and a server that had
+ * already removed one post from the list would have hidden it from the search.
+ *
+ * The whole list goes to the browser deliberately — see the note at the top of
+ * `$lib/filters`. A company blog is tens of rows, and sending all of them is
+ * what lets the filtering be instant and the page still make sense with no
+ * JavaScript at all.
+ */
+export const load: PageServerLoad = async () => ({ posts: await listPosts() });

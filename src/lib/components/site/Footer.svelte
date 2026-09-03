@@ -2,9 +2,18 @@
 	import { Mail, MapPin, Phone } from '@lucide/svelte';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import { CONTACT } from '$lib/site';
+	import { socialHref, socialLabel, type SocialPlatform } from '$lib/social';
 	import * as m from '$lib/paraglide/messages';
 	import Logo from './Logo.svelte';
+	import SocialIcon from './SocialIcon.svelte';
 	import NewsletterForm from './NewsletterForm.svelte';
+
+	/**
+	 * The company's own accounts, from `company_links` by way of the layout's
+	 * load. Empty is the shipping default and draws nothing: a "follow us"
+	 * heading over no icons is worse than no heading.
+	 */
+	let { links = [] }: { links?: { id: number; platform: string; url: string }[] } = $props();
 
 	const year = new Date().getFullYear();
 
@@ -85,6 +94,29 @@
 			<div>
 				<h2 class="eyebrow mb-4 text-muted-foreground">{m.footer_connect()}</h2>
 				<NewsletterForm />
+
+				{#if links.length}
+					<h3 class="eyebrow mt-8 mb-3 text-muted-foreground">{m.footer_follow()}</h3>
+					<ul class="flex flex-wrap items-center gap-1">
+						{#each links as link (link.id)}
+							<li>
+								<a
+									href={socialHref(link.platform as SocialPlatform, link.url)}
+									target="_blank"
+									rel="me noopener noreferrer"
+									class="inline-flex size-9 items-center justify-center rounded-full border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+								>
+									<SocialIcon platform={link.platform as SocialPlatform} />
+									<!-- Named for the company, the way the about page names each
+									     link for its person: "Pulsedata Solutions · LinkedIn". -->
+									<span class="sr-only">
+										{socialLabel(link.platform as SocialPlatform, m.site_name())}
+									</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				{/if}
 			</div>
 		</div>
 

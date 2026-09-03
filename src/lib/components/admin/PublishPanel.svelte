@@ -2,6 +2,7 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Switch } from '$lib/components/ui/switch/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
+	import InputComp from '$lib/formComponents/InputComp.svelte';
 	import type { FieldErrors } from '$lib/formComponents/types';
 	import * as m from '$lib/paraglide/messages';
 
@@ -29,24 +30,17 @@
 </script>
 
 <div class="space-y-5 rounded-lg border p-4">
-	<div class="space-y-2">
-		<Label for="status" class="text-sm">{m.dash_field_status()}</Label>
-		<!--
-			A native select, not the shadcn one. This is a two-option control on a
-			form the same three people use every week; the combobox adds a popover,
-			a portal and keyboard handling for no gain over the control the browser
-			already ships and the OS already styles on a phone.
-		-->
-		<select
-			id="status"
-			name="status"
-			bind:value={status}
-			class="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-none"
-		>
-			<option value="draft">{m.dash_status_draft()}</option>
-			<option value="published">{m.dash_status_published()}</option>
-		</select>
-	</div>
+	<InputComp
+		name="status"
+		type="select"
+		label={m.dash_field_status()}
+		items={[
+			{ value: 'draft', name: m.dash_status_draft() },
+			{ value: 'published', name: m.dash_status_published() }
+		]}
+		bind:value={status}
+		{errors}
+	/>
 
 	<div class="flex items-start justify-between gap-4">
 		<div class="space-y-1">

@@ -5,7 +5,7 @@ import { db } from '$lib/server/db';
 import { teamMembers } from '$lib/server/db/schema';
 import { teamSchema } from '$lib/forms/admin';
 import { orNull, replaceImage } from '$lib/server/admin';
-import { writeMemberLinks } from '$lib/server/team-write';
+import { writeMemberLinks } from '$lib/server/social-write';
 import { localizeHref } from '$lib/paraglide/runtime';
 import type { Actions, PageServerLoad } from './$types';
 
